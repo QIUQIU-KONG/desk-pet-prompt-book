@@ -1,0 +1,29 @@
+Use case: ui-mockup / transparent game UI asset source
+Asset type: desktop floating panel background for a magical prompt manager app
+
+Primary request:
+Create a polished fantasy game UI open-book / ancient manual panel background for an internal floating panel. The final asset will be cut out and placed in a transparent Electron desktop window, so the book must have complete safe margins and must not touch the canvas edge.
+
+Canvas and background:
+Landscape 16:9, 2k. Use a perfectly flat solid #00ff00 chroma-key background. The background must be one uniform color with no shadows, no gradients, no texture, no glow, no reflection, and no floor plane. Do not use #00ff00 anywhere inside the book.
+
+Composition:
+The open book/manual is centered and occupies about 82-84% of the canvas width and 72-76% of the canvas height. Leave generous empty chroma-key padding around all four sides. No book corner, page edge, ornament, jewel, shadow, glow, or leather border may touch or be clipped by the canvas boundary.
+
+Book shape:
+The book is a wide open magical manual with crisp complete outer edges, visible page thickness, refined leather binding, gold corner ornaments, and small blue jewels. The book frame should feel integrated and handcrafted, not like a hard rectangular card. The center fold/spine should be subtle and elegant, not a hard vertical line.
+
+Functional layout:
+The left page has a calm blank safe area for a narrow project/navigation column. The right page has a larger blank safe area for search, sorting, and prompt list content. Leave the upper-right page area clean enough for a close button. Do not bake in any UI labels, icons, cards, search bars, buttons, or text.
+
+Style:
+High-quality fantasy game UI asset, semi-realistic painted parchment and leather, mature and elegant, slightly weighty and refined. Warm parchment pages with subtle clean texture, clear readable surfaces, crisp border details. Avoid cute, girly, pastel diary styling.
+
+Lighting:
+Soft warm parchment lighting only inside the book. No external shadow on the green background. No smoke, no particles, no butterfly, no characters, no hands, no desk scene.
+
+Text:
+No text, no labels, no watermark.
+
+Avoid:
+No cropped book edges, no element touching the canvas edge, no blurry page boundary, no ragged cutout artifacts, no hard rectangular outer frame, no scroll-like single sheet, no flat two-board look, no modern dashboard elements.

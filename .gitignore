@@ -1,0 +1,13 @@
+node_modules/
+.env
+.env.*
+*.log
+*.tmp
+dist/
+release/
+out/
+.DS_Store
+Thumbs.db
+.superpowers/
+.codex/last-verified.local.json
+.codex/visuals/private-drafts/

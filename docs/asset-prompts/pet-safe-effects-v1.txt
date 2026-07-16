@@ -1,0 +1,47 @@
+Electron-safe desktop-pet effects v1
+===================================
+
+Purpose
+-------
+Add visible magical light and recognizable butterflies to the real 220x220
+Electron transparent window without CSS blur, shadow, filter, or blend-mode
+compositing.
+
+Glow overlay
+------------
+Generated deterministically as a 1600x1600 RGBA raster with Pillow and NumPy.
+The transparent canvas contains a restrained cyan-white center-spine light and
+a blue-violet elliptical levitation light beneath the book. Alpha fades to
+zero around every outer edge.
+
+Butterfly source prompt
+-----------------------
+Use case: stylized-concept
+Asset type: Electron desktop-pet butterfly sprite
+Primary request: one elegant luminous fantasy butterfly with a clearly
+recognizable, symmetrical pair of fully spread wings
+Scene/backdrop: perfectly flat solid #ff00ff chroma-key background for
+removal, one uniform color with no gradients, texture, shadows, reflections,
+or floor plane
+Subject: a single centered butterfly viewed from the front/top, refined white
+and icy-blue wings, slender body, subtle cyan inner illumination, crisp
+readable silhouette
+Style/medium: polished semi-realistic magical illustration suitable for a
+premium ancient magic-book desktop pet
+Composition/framing: centered square composition, generous padding on all
+sides, entire wings and antennae fully visible
+Lighting/mood: restrained magical luminosity contained close to the wings;
+elegant rather than cute
+Constraints: no cast shadow, no contact shadow, no text, no watermark, no
+additional objects, no magenta anywhere in the butterfly, subject fully
+separated from the background
+Avoid: paired glowing blobs, abstract orb shape, heavy bloom, distant blur
+halos, cropped wings, multiple butterflies, floral decorations
+
+Transparent preparation
+-----------------------
+The selected built-in image-generation output was keyed locally with
+remove_chroma_key.py using #ff00ff, a soft matte, despill, and a one-pixel edge
+contract. The visible subject was cropped, centered, and downsampled to a
+512x512 RGBA PNG. The final sprite was checked at approximately 24px on both
+light and dark backgrounds.

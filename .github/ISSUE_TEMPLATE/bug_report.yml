@@ -1,0 +1,81 @@
+name: Bug report
+description: Report a reproducible problem in the desktop pet or prompt workflow.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting a problem. Remove prompts, credentials, account names, and personal paths from every attachment.
+
+  - type: dropdown
+    id: operating_system
+    attributes:
+      label: Operating system
+      options:
+        - Windows 11
+        - Windows 10
+        - Other or browser preview
+    validations:
+      required: true
+
+  - type: input
+    id: app_commit
+    attributes:
+      label: App commit or version
+      description: Use the Git commit hash when running from source.
+      placeholder: 1b3efe8
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction steps
+      description: List the shortest reliable sequence from launch to failure.
+      placeholder: |
+        1. Start the app with ...
+        2. Open ...
+        3. Observe ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Sanitized logs
+      description: Paste only relevant lines after removing sensitive prompts, credentials, usernames, and personal paths.
+      render: shell
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots or recording
+      description: Attach media only after checking the desktop and prompt text for sensitive information.
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Confirmation
+      options:
+        - label: I searched existing issues for the same problem.
+          required: true
+        - label: I removed sensitive data from this report and its attachments.
+          required: true
+        - label: This report does not disclose an unpatched security vulnerability.
+          required: true

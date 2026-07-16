@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>桌宠魔法书预览</title>
+    <link rel="stylesheet" href="./styles.css?v=20260714-final-content" />
+  </head>
+  <body>
+    <main class="preview-stage" aria-label="桌宠魔法书预览">
+      <section class="pet-shell" aria-label="漂浮魔法书桌宠" role="button" tabindex="0">
+        <div class="floating-shadow" aria-hidden="true"></div>
+        <img
+          class="book-body"
+          src="./assets/pet-book-body-v5-alpha.png"
+          alt="漂浮的展开古代魔法书桌宠"
+          draggable="false"
+        />
+        <img
+          class="electron-safe-glow"
+          src="./assets/pet-safe-glow-v1.png"
+          alt=""
+          aria-hidden="true"
+          draggable="false"
+        />
+        <div class="page-glow" aria-hidden="true"></div>
+        <div class="magic-smoke" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <div class="stardust" aria-hidden="true">
+          <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+        </div>
+        <div class="butterflies" aria-hidden="true">
+          <b class="butterfly butterfly-a"></b>
+          <b class="butterfly butterfly-b"></b>
+          <b class="butterfly butterfly-c"></b>
+        </div>
+        <div class="electron-safe-butterflies" aria-hidden="true">
+          <img
+            class="electron-safe-butterfly electron-safe-butterfly-a"
+            src="./assets/pet-safe-butterfly-v1.png"
+            alt=""
+            aria-hidden="true"
+            draggable="false"
+          />
+          <img
+            class="electron-safe-butterfly electron-safe-butterfly-b"
+            src="./assets/pet-safe-butterfly-v1.png"
+            alt=""
+            aria-hidden="true"
+            draggable="false"
+          />
+          <img
+            class="electron-safe-butterfly electron-safe-butterfly-c"
+            src="./assets/pet-safe-butterfly-v1.png"
+            alt=""
+            aria-hidden="true"
+            draggable="false"
+          />
+        </div>
+        <div class="feedback-label" aria-live="polite">单击展开 · 双击捕获</div>
+      </section>
+
+      <section class="panel-shell" aria-label="提示词魔法书面板">
+        <img
+          class="panel-bg"
+          src="./assets/panel-book-ui-v3b-alpha.png"
+          alt=""
+          draggable="false"
+          aria-hidden="true"
+        />
+        <div class="panel-drag-zone" aria-hidden="true"></div>
+        <button class="panel-close" type="button" aria-label="关闭面板">×</button>
+        <div class="panel-feedback" aria-live="polite"></div>
+
+        <div class="panel-content">
+          <aside class="project-page project-rail page-surface" aria-label="项目目录">
+            <header class="project-page-header">
+              <small>Prompt Archive</small>
+              <div class="project-title-row">
+                <h2>项目目录</h2>
+                <button
+                  class="project-create-toggle"
+                  type="button"
+                  data-project-create-toggle
+                  aria-label="新建项目"
+                  aria-expanded="false"
+                >＋</button>
+                <form class="create-project-form" data-project-create-form hidden>
+                  <input type="text" name="projectName" placeholder="项目名" maxlength="24" autocomplete="off" />
+                  <button class="create-project-confirm" type="submit" aria-label="确认新建项目">✓</button>
+                  <button class="create-project-cancel" type="button" data-project-create-cancel aria-label="取消新建项目">×</button>
+                </form>
+              </div>
+            </header>
+            <nav class="library-entry" aria-label="提示词库">
+              <button class="project-item active" type="button" data-view="library">
+                <span>提示词库</span>
+                <b data-library-count>0</b>
+              </button>
+            </nav>
+            <div class="project-list" data-project-list></div>
+          </aside>
+
+          <main class="prompt-page panel-main page-surface" aria-label="提示词列表">
+            <div class="panel-toolbar">
+              <label class="panel-search">
+                <span>⌕</span>
+                <input type="search" placeholder="搜索标题、正文、备注、关键词..." />
+              </label>
+              <label class="search-scope-toggle">
+                <span class="scope-title">搜索范围</span>
+                <input type="checkbox" data-current-view-only />
+                <span class="scope-option scope-global">全局</span>
+                <span class="scope-option scope-current">当前页</span>
+              </label>
+            </div>
+
+            <div class="prompt-filter-row">
+              <button class="pending-filter" type="button" data-pending-toggle aria-pressed="false">
+                <span>待归纳</span>
+                <b data-pending-count>0</b>
+              </button>
+              <span class="pending-note" data-pending-note hidden>记得归纳清理哟~</span>
+            </div>
+
+            <div class="stage-row" aria-label="阶段筛选">
+              <div class="stage-pills" data-stage-list></div>
+              <button class="stage-action-button" type="button" data-stage-action="create">＋阶段</button>
+              <button class="sort-button" type="button" aria-label="排序" data-sort-button>排序：综合</button>
+            </div>
+
+            <div class="prompt-list" aria-live="polite"></div>
+            <nav class="prompt-pagination" aria-label="提示词翻页">
+              <button type="button" data-prompt-page="previous" aria-label="上一页">&lsaquo;</button>
+              <output data-prompt-page-status aria-live="polite">0 / 0</output>
+              <button type="button" data-prompt-page="next" aria-label="下一页">&rsaquo;</button>
+            </nav>
+          </main>
+        </div>
+
+        <dialog class="prompt-edit-modal" data-prompt-edit-modal>
+          <form method="dialog" class="prompt-edit-form">
+            <header>
+              <h2>编辑提示词</h2>
+              <button type="button" aria-label="关闭编辑" data-editor-close>×</button>
+            </header>
+            <input type="hidden" name="promptId" />
+            <label>
+              <span>标题</span>
+              <input type="text" name="promptTitle" maxlength="80" />
+            </label>
+            <label>
+              <span>正文</span>
+              <textarea name="promptContent" rows="6"></textarea>
+            </label>
+            <label>
+              <span>备注</span>
+              <textarea name="promptNote" rows="2" placeholder="后端、前端、搭建 agent..."></textarea>
+            </label>
+            <div class="editor-grid">
+              <label>
+                <span>项目</span>
+                <select name="promptProject"></select>
+              </label>
+              <label>
+                <span>阶段</span>
+                <select name="promptStage"></select>
+              </label>
+              <label>
+                <span>评分</span>
+                <input type="number" name="promptRating" min="0" max="5" step="1" />
+              </label>
+              <label class="editor-check">
+                <input type="checkbox" name="promptPinned" />
+                <span>置顶</span>
+              </label>
+            </div>
+            <label>
+              <span>关键词</span>
+              <input type="text" name="promptKeywords" placeholder="用逗号分隔，可复用已有关键词" list="keyword-options" />
+              <datalist id="keyword-options" data-keyword-options></datalist>
+            </label>
+            <footer>
+              <button type="button" data-editor-cancel>取消</button>
+              <button type="submit" data-editor-save>保存</button>
+            </footer>
+          </form>
+        </dialog>
+
+        <dialog class="confirm-dialog" data-prompt-delete-dialog aria-labelledby="prompt-delete-title">
+          <form method="dialog" data-prompt-delete-form>
+            <h2 id="prompt-delete-title">删除提示词</h2>
+            <p data-prompt-delete-message></p>
+            <div class="dialog-actions">
+              <button type="button" data-prompt-delete-cancel>取消</button>
+              <button type="button" class="danger" data-prompt-delete-confirm>永久删除</button>
+            </div>
+          </form>
+        </dialog>
+
+        <dialog class="confirm-dialog text-action-dialog" data-text-action-dialog aria-labelledby="text-action-title">
+          <form data-text-action-form>
+            <h2 id="text-action-title" data-text-action-title></h2>
+            <label class="text-action-field">
+              <span data-text-action-label>名称</span>
+              <input type="text" data-text-action-input maxlength="24" autocomplete="off" />
+            </label>
+            <div class="dialog-actions">
+              <button type="button" data-text-action-cancel>取消</button>
+              <button type="submit" data-text-action-confirm>确认</button>
+            </div>
+          </form>
+        </dialog>
+
+        <dialog class="confirm-dialog" data-confirm-action-dialog aria-labelledby="confirm-action-title">
+          <form data-confirm-action-form>
+            <h2 id="confirm-action-title" data-confirm-action-title></h2>
+            <p data-confirm-action-message></p>
+            <div class="dialog-actions">
+              <button type="button" data-confirm-action-cancel>取消</button>
+              <button type="submit" class="danger" data-confirm-action-confirm>确认</button>
+            </div>
+          </form>
+        </dialog>
+      </section>
+    </main>
+    <script src="./prompt-entry-view.js?v=20260714-final-content"></script>
+    <script src="./prompt-pagination.js?v=20260716-paged-manuscript"></script>
+    <script src="./pet-preview.js?v=20260714-final-content"></script>
+  </body>
+</html>

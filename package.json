@@ -1,0 +1,41 @@
+{
+  "name": "desk-pet-prompt-book",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Floating magic-book desktop pet for capturing and organizing reusable prompts.",
+  "license": "MIT",
+  "author": "QIUQIU-KONG",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/QIUQIU-KONG/desk-pet-prompt-book.git"
+  },
+  "bugs": {
+    "url": "https://github.com/QIUQIU-KONG/desk-pet-prompt-book/issues"
+  },
+  "homepage": "https://github.com/QIUQIU-KONG/desk-pet-prompt-book#readme",
+  "keywords": [
+    "electron",
+    "desktop-pet",
+    "clipboard",
+    "prompt-management",
+    "windows"
+  ],
+  "engines": {
+    "node": ">=24"
+  },
+  "packageManager": "pnpm@11.13.0",
+  "main": "src/electron/main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "pet": "pnpm start",
+    "preview": "node scripts/preview-server.cjs",
+    "check:syntax": "node --check src/core/prompt-store.cjs && node --check src/electron/main.cjs && node --check src/electron/preload.cjs && node --check src/renderer/pet-preview.js && node --check src/renderer/prompt-entry-view.js && node --check src/renderer/prompt-pagination.js && node --check scripts/open-source-readiness.cjs && node --check scripts/preview-server.cjs",
+    "test": "node --test tests/*.test.mjs",
+    "audit:high": "pnpm audit --audit-level high --registry https://registry.npmjs.org",
+    "readiness:report": "node scripts/open-source-readiness.cjs --json",
+    "readiness": "node scripts/open-source-readiness.cjs --strict"
+  },
+  "devDependencies": {
+    "electron": "39.8.10"
+  }
+}

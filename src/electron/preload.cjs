@@ -1,0 +1,32 @@
+const { contextBridge, ipcRenderer } = require('electron');
+
+contextBridge.exposeInMainWorld('deskPet', {
+  captureClipboardPrompt: () => ipcRenderer.invoke('prompts:captureClipboard'),
+  queryPrompts: (options) => ipcRenderer.invoke('prompts:query', options),
+  getPromptCounts: () => ipcRenderer.invoke('prompts:counts'),
+  listProjects: () => ipcRenderer.invoke('projects:list'),
+  createProject: (name) => ipcRenderer.invoke('projects:create', name),
+  renameProject: (projectId, name) => ipcRenderer.invoke('projects:rename', projectId, name),
+  toggleProjectPinned: (projectId) => ipcRenderer.invoke('projects:togglePinned', projectId),
+  deleteProject: (projectId) => ipcRenderer.invoke('projects:delete', projectId),
+  listStagesForProject: (projectId) => ipcRenderer.invoke('projects:listStages', projectId),
+  createStage: (projectId, name) => ipcRenderer.invoke('stages:create', projectId, name),
+  renameStage: (stageId, name) => ipcRenderer.invoke('stages:rename', stageId, name),
+  hideStage: (stageId) => ipcRenderer.invoke('stages:hide', stageId),
+  reorderStage: (stageId, nextOrder) => ipcRenderer.invoke('stages:reorder', stageId, nextOrder),
+  updatePromptProject: (promptId, projectId, stageId = null) => ipcRenderer.invoke('prompts:updateProject', promptId, projectId, stageId),
+  updatePromptStage: (promptId, stageId) => ipcRenderer.invoke('prompts:updateStage', promptId, stageId),
+  togglePromptPinned: (promptId) => ipcRenderer.invoke('prompts:togglePinned', promptId),
+  updatePromptRating: (promptId, rating) => ipcRenderer.invoke('prompts:updateRating', promptId, rating),
+  updatePrompt: (promptId, patch) => ipcRenderer.invoke('prompts:update', promptId, patch),
+  deletePrompt: (promptId) => ipcRenderer.invoke('prompts:delete', promptId),
+  listKeywords: () => ipcRenderer.invoke('keywords:list'),
+  createKeyword: (name) => ipcRenderer.invoke('keywords:create', name),
+  getViewState: () => ipcRenderer.invoke('viewState:get'),
+  updateViewState: (viewState) => ipcRenderer.invoke('viewState:update', viewState),
+  copyPrompt: (promptId) => ipcRenderer.invoke('prompts:copyPrompt', promptId),
+  startPetWindowDrag: (offsetX, offsetY) => ipcRenderer.invoke('window:startDrag', offsetX, offsetY),
+  stopPetWindowDrag: () => ipcRenderer.invoke('window:stopDrag'),
+  openPetPanel: () => ipcRenderer.invoke('window:openPanel'),
+  closePetPanel: () => ipcRenderer.invoke('window:closePanel')
+});

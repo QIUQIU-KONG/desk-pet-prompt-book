@@ -1,0 +1,44 @@
+Use case: stylized-concept
+Asset type: desktop pet layered asset, layer 01 book body v5 balanced right text
+
+Primary request:
+Create a refined book-body layer for a floating open ancient magic book desktop pet. Keep the same book, parchment, blue gemstone, smaller right-side writing pen, aligned calligraphy, and symmetrical flourish direction as the v4 candidate. Make one layout refinement: move the right page calligraphy slightly left toward the page center so the two text blocks feel balanced, while keeping both text blocks on the same horizontal level.
+
+Reference intent:
+Use the reference image for the open book pose, antique parchment, gold ornaments, blue gemstone, right-side smaller pen, aligned decorative calligraphy, and symmetrical lower flourishes. Preserve the identity and style; only improve right-page text balance and pen clearance.
+
+Layer scope:
+This layer contains the open book body, embedded blue gemstone, one smaller floating fountain pen on the right page, sparse decorative English calligraphy, and symmetrical lower flourish ornaments. Do not include tall smoke, butterflies, stardust clouds, page-center magic beam, UI, room background, desk, candles, people, or hands.
+
+Book details:
+Warm yellowed parchment pages, thick layered paper, soft organic page curves, natural page curling, irregular hand-painted edges, visible book thickness, refined antique gold ornaments, subtle metal corner details.
+
+Calligraphy layout:
+Place one calligraphy text block on the left page and one calligraphy text block on the right page. The two text blocks must be on the same horizontal level, with similar visual size and weight. The right-page text block should sit more toward the inner-middle of the right page, not too close to the outer right edge. It should feel balanced with the left-page text block across the open book.
+
+Calligraphy content:
+Use sparse readable decorative English cursive:
+- Left page: "Build agents with clarity."
+- Right page: "Let prompts become systems."
+The text should look handwritten in dark brown or muted golden ink. It should be graceful, sparse, and decorative. Avoid long paragraphs or random fake text.
+
+Flourish ornament alignment:
+Each page should have a matching bow-like cursive flourish ornament below its calligraphy. The two lower flourishes must be the same size, same visual weight, and placed on the same horizontal level. They should look balanced and intentional.
+
+Pen placement:
+Keep exactly one smaller antique fountain pen on the right side above the right page. It should angle diagonally upward and look like it is writing. The nib should be near the right page text area but must not cover or collide with the letters. The pen should be slightly offset to the upper-right of the text, leaving the words readable.
+
+Layout:
+The spread should feel polished and symmetrical: left text, right text, and lower flourishes should form a calm balanced composition. The center crease remains open for a future page-core glow layer. The book remains dominant.
+
+Composition:
+Square composition. Center the open book in a subtle top-down angle with both pages visible. The whole book and pen must be visible, not cropped. Leave generous padding around all edges.
+
+Style:
+Semi-realistic dreamy fantasy illustration, soft painterly rendering, refined, elegant, magical, premium. Not a hard SVG, not a sticker, not a cartoon mascot, not a UI icon.
+
+Background:
+Use a simple clean dark blue background or flat removable background. Keep it low-detail so the book can later be cut out.
+
+Avoid:
+No right text too close to page edge, no pen covering text, no misaligned text blocks, no mismatched lower flourishes, no oversized pen, no pen crossing the whole center, no tall smoke, no butterflies, no stardust clouds, no large magic beam, no closed book, no square gemstone, no hard geometric SVG style, no chibi cartoon style, no stiff rectangular pages, no cluttered room, no desk scene, no people, no hands, no candles, no long paragraphs, no unreadable random fake text.

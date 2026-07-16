@@ -1,0 +1,72 @@
+name: Feature request
+description: Propose a user workflow or maintainability improvement.
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Describe the workflow and acceptance value rather than only the visual control you want added.
+
+  - type: textarea
+    id: workflow
+    attributes:
+      label: Current workflow or problem
+      description: What are you trying to accomplish, and where does the current flow break down?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: Describe observable behavior without prescribing unnecessary architecture.
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance value
+      description: State how a reviewer can tell the feature solves the workflow.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+
+  - type: dropdown
+    id: privacy
+    attributes:
+      label: Privacy impact
+      options:
+        - No new data access or storage
+        - Changes local stored data
+        - Changes clipboard behavior
+        - Adds network or external-service behavior
+        - Unsure
+    validations:
+      required: true
+
+  - type: dropdown
+    id: assets
+    attributes:
+      label: Visual asset impact
+      options:
+        - No visual asset changes
+        - Changes existing assets
+        - Adds new assets with provenance
+        - Unsure
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Scope check
+      options:
+        - label: This request supports the prompt-workflow product direction rather than a disposable MVP path.
+          required: true
