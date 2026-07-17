@@ -2,6 +2,14 @@ const path = require('node:path');
 const fs = require('node:fs');
 const { app, BrowserWindow, Menu, clipboard, ipcMain, screen } = require('electron');
 const { createPromptStore } = require('../core/prompt-store.cjs');
+const {
+  attachExitContextMenu,
+  configureStableUserDataPath,
+  focusPrimaryWindow,
+  setupSingleInstance
+} = require('./app-lifecycle.cjs');
+
+configureStableUserDataPath(app);
 
 const rootDir = path.resolve(__dirname, '..', '..');
 const rendererPath = path.join(rootDir, 'src', 'renderer', 'index.html');
@@ -26,6 +34,7 @@ const WINDOW_MODE_SIZES = {
 };
 let promptStore;
 let dragSession = null;
+let primaryWindow = null;
 
 function appendStartupLog(message) {
   const logPath = path.join(app.getPath('userData'), 'startup-log.txt');
@@ -365,6 +374,8 @@ function createPetWindow() {
     }
   });
 
+  primaryWindow = petWindow;
+  attachExitContextMenu(petWindow, Menu, app);
   setWindowMode(petWindow, WINDOW_MODES.PET);
   lockPetWindowSize(petWindow);
   positionPetWindow(petWindow);
@@ -378,6 +389,11 @@ function createPetWindow() {
   petWindow.once('ready-to-show', () => {
     petWindow.show();
   });
+  petWindow.once('closed', () => {
+    if (primaryWindow === petWindow) {
+      primaryWindow = null;
+    }
+  });
   petWindow.loadFile(rendererPath, {
     query: {
       shell: 'electron'
@@ -389,29 +405,37 @@ function createPetWindow() {
   return petWindow;
 }
 
-app.whenReady().then(() => {
-  Menu.setApplicationMenu(null);
-  createPetWindow();
+function focusExistingInstance() {
+  focusPrimaryWindow(primaryWindow);
+}
 
-  screen.on('display-metrics-changed', () => {
-    BrowserWindow.getAllWindows().forEach(lockPetWindowSize);
-  });
-  screen.on('display-added', () => {
-    BrowserWindow.getAllWindows().forEach(lockPetWindowSize);
-  });
-  screen.on('display-removed', () => {
-    BrowserWindow.getAllWindows().forEach(lockPetWindowSize);
+const isPrimaryInstance = setupSingleInstance(app, focusExistingInstance);
+
+if (isPrimaryInstance) {
+  app.whenReady().then(() => {
+    Menu.setApplicationMenu(null);
+    createPetWindow();
+
+    screen.on('display-metrics-changed', () => {
+      BrowserWindow.getAllWindows().forEach(lockPetWindowSize);
+    });
+    screen.on('display-added', () => {
+      BrowserWindow.getAllWindows().forEach(lockPetWindowSize);
+    });
+    screen.on('display-removed', () => {
+      BrowserWindow.getAllWindows().forEach(lockPetWindowSize);
+    });
+
+    app.on('activate', () => {
+      if (BrowserWindow.getAllWindows().length === 0) {
+        createPetWindow();
+      }
+    });
   });
 
-  app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
-      createPetWindow();
+  app.on('window-all-closed', () => {
+    if (process.platform !== 'darwin') {
+      app.quit();
     }
   });
-});
-
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
-});
+}

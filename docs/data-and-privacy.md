@@ -8,7 +8,7 @@ The Electron main process creates the prompt store at:
 <Electron userData>/data/prompts.json
 ```
 
-On Windows this is commonly `%APPDATA%\desk-pet-prompt-book\data\prompts.json`, but Electron and the operating system determine the actual `userData` path.
+On Windows the application explicitly fixes this path to `%APPDATA%\desk-pet-prompt-book\data\prompts.json` before startup logging or prompt-store initialization. The source-run and installed application therefore use the same data contract even though the packaged product name is different.
 
 The file is UTF-8 JSON and is **not encrypted at rest**. The application currently has no database server, account, cloud sync, telemetry, or intentional prompt-library upload path.
 
@@ -91,7 +91,7 @@ Mutations in one app instance are serialized in invocation order. Each mutation 
 
 Invalid collection types become empty collections. A prompt whose project no longer exists returns to the pending state; missing or cross-project stage references and missing keyword references are cleared without deleting the prompt.
 
-The queue protects concurrent actions inside one app process. The store is not a multi-process database, so independently launched app instances must not share and write the same `userData` directory.
+The queue protects concurrent actions inside one app process. The store is not a multi-process database, so Electron acquires a single-instance lock before creating a window. A second launch exits its new process and focuses the existing desktop pet or panel instead of opening another writer for the same `userData` directory.
 
 ## Clipboard And Copying
 
@@ -116,6 +116,7 @@ On startup, renderer, or prompt-store recovery failures, the main process may ap
 - Delete one prompt through the in-app confirmation flow.
 - Delete all prompt-library and recovery data by closing the app and removing `data/prompts.json`, `data/prompts.json.bak`, and any `data/prompts.json*.corrupt-*` files.
 - Delete all application state by closing the app and removing its entire `userData` directory.
+- Uninstalling the Windows application intentionally retains `%APPDATA%\desk-pet-prompt-book`; delete that directory separately only when permanent removal of the prompt library is intended.
 
 Do not hand-edit the files while the app is running. Automatic recovery preserves invalid input for diagnosis, but it cannot reconstruct content when both the primary file and backup are unreadable.
 

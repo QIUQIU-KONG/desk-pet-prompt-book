@@ -262,6 +262,7 @@ Expected: icon and licensing tests pass and exactly nine current distributed vis
 - Create: `src/electron/app-lifecycle.cjs`
 - Create: `tests/electron-app-lifecycle.test.mjs`
 - Modify: `src/electron/main.cjs`
+- Modify: `package.json`
 - Modify: `tests/electron-pet-shell.test.mjs`
 - Modify: `.codex/product-requirements.md`
 - Modify: `.codex/interaction-flows.md`
@@ -272,7 +273,7 @@ Expected: icon and licensing tests pass and exactly nine current distributed vis
 - Produces: `configureStableUserDataPath(app)`, `setupSingleInstance(app, onSecondInstance)`, `focusPrimaryWindow(window)`, and `attachExitContextMenu(window, Menu, app)`.
 - Consumes: Electron `app`, `BrowserWindow`, and `Menu` objects through explicit parameters so behavior can be unit tested without launching Electron.
 
-- [ ] **Step 1: Write failing lifecycle unit tests**
+- [x] **Step 1: Write failing lifecycle unit tests**
 
 Use fakes to require these behaviors:
 
@@ -292,7 +293,7 @@ assert.equal(fakeApp.quitCalls, 1);
 
 Extend shell tests to require stable-path configuration before `appendStartupLog`, one instance lock before `app.whenReady`, second-instance focus, and context-menu attachment from `createPetWindow()`.
 
-- [ ] **Step 2: Verify RED**
+- [x] **Step 2: Verify RED**
 
 Run:
 
@@ -302,7 +303,7 @@ corepack pnpm exec node --test tests/electron-app-lifecycle.test.mjs tests/elect
 
 Expected: FAIL because lifecycle helpers and main-process wiring are absent.
 
-- [ ] **Step 3: Implement the lifecycle module**
+- [x] **Step 3: Implement the lifecycle module**
 
 Implement dependency-injected CommonJS functions with this public shape:
 
@@ -328,15 +329,15 @@ function setupSingleInstance(app, onSecondInstance) {
 
 `focusPrimaryWindow` restores only when minimized, then shows and focuses. `attachExitContextMenu` registers `webContents.on('context-menu')`, builds one native item labeled `退出桌宠`, and calls `menu.popup({ window })`; its handler must not call `app.quit()` until the item callback runs.
 
-- [ ] **Step 4: Wire lifecycle behavior before application startup**
+- [x] **Step 4: Wire lifecycle behavior before application startup**
 
 In `main.cjs`, call `configureStableUserDataPath(app)` before startup-log handlers and prompt-store access. Keep one `primaryWindow` reference, focus it on `second-instance`, attach the exit menu inside `createPetWindow()`, and execute `app.whenReady()`/`window-all-closed` setup only when `setupSingleInstance()` returns true.
 
-- [ ] **Step 5: Update product and privacy contracts**
+- [x] **Step 5: Update product and privacy contracts**
 
 Document `%APPDATA%\desk-pet-prompt-book`, one-process ownership of the prompt file, second-launch focus behavior, and the right-click menu path. Replace the old “multiple independent instances are unsupported” statement with the enforced single-instance behavior.
 
-- [ ] **Step 6: Verify GREEN and commit**
+- [x] **Step 6: Verify GREEN and commit**
 
 Run:
 
