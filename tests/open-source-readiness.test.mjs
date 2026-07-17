@@ -292,6 +292,7 @@ test('repository automation enforces verification and structured contributions',
   const [
     ci,
     codeql,
+    release,
     dependabot,
     bugReport,
     featureRequest,
@@ -300,6 +301,7 @@ test('repository automation enforces verification and structured contributions',
   ] = await Promise.all([
     '.github/workflows/ci.yml',
     '.github/workflows/codeql.yml',
+    '.github/workflows/release.yml',
     '.github/dependabot.yml',
     '.github/ISSUE_TEMPLATE/bug_report.yml',
     '.github/ISSUE_TEMPLATE/feature_request.yml',
@@ -320,6 +322,40 @@ test('repository automation enforces verification and structured contributions',
   assert.match(codeql, /permissions:[\s\S]*security-events: write/);
   assert.match(codeql, /github\/codeql-action\/init@v3/);
   assert.match(codeql, /github\/codeql-action\/analyze@v3/);
+  assert.match(release, /tags:\s*\n\s+- ['"]v\*['"]/);
+  assert.match(release, /permissions:\s*\n\s+contents: write/);
+  assert.match(release, /windows-latest/);
+  assert.match(release, /fetch-depth: 0/);
+  assert.match(release, /version: 11\.13\.0/);
+  assert.match(release, /node-version: 24/);
+  assert.match(release, /pnpm install --frozen-lockfile/);
+  assert.match(release, /git fetch origin main:refs\/remotes\/origin\/main/);
+  assert.match(release, /pnpm run release:verify-tag/);
+  assert.match(release, /pnpm run check:syntax/);
+  assert.match(release, /pnpm test/);
+  assert.match(release, /pnpm run readiness/);
+  assert.match(release, /pnpm audit --audit-level high/);
+  assert.match(release, /CSC_IDENTITY_AUTO_DISCOVERY:\s*['"]false['"]/);
+  assert.match(release, /pnpm run build:win/);
+  assert.match(release, /pnpm run release:prepare-assets/);
+  assert.match(release, /pnpm run release:verify-assets/);
+  assert.match(release, /actions\/upload-artifact@v4/);
+  assert.match(release, /Desk-Pet-Prompt-Book-Setup-0\.1\.0-beta\.1\.exe/);
+  assert.match(release, /SHA256SUMS\.txt/);
+  assert.match(release, /gh release create/);
+  assert.match(release, /--verify-tag/);
+  assert.match(release, /--prerelease/);
+  assert.match(release, /docs\/releases\/v0\.1\.0-beta\.1\.md/);
+
+  const releaseOrder = [
+    'pnpm run release:verify-tag',
+    'pnpm run build:win',
+    'pnpm run release:prepare-assets',
+    'actions/upload-artifact@v4',
+    'gh release create'
+  ].map((marker) => release.indexOf(marker));
+  assert.ok(releaseOrder.every((index) => index >= 0));
+  assert.deepEqual(releaseOrder, [...releaseOrder].sort((left, right) => left - right));
   assert.match(dependabot, /package-ecosystem:\s*["']npm["']/);
   assert.match(dependabot, /package-ecosystem:\s*["']github-actions["']/);
   assert.match(dependabot, /interval:\s*["']weekly["']/);
@@ -334,6 +370,7 @@ test('strict readiness requires GitHub automation files', () => {
   const expectedAutomationFiles = [
     '.github/workflows/ci.yml',
     '.github/workflows/codeql.yml',
+    '.github/workflows/release.yml',
     '.github/dependabot.yml',
     '.github/ISSUE_TEMPLATE/bug_report.yml',
     '.github/ISSUE_TEMPLATE/feature_request.yml',
@@ -346,6 +383,33 @@ test('strict readiness requires GitHub automation files', () => {
   });
 
   assert.ok(REQUIRED_PUBLIC_FILES.includes('build/icon.ico'), 'build/icon.ico must be required');
+  assert.ok(
+    REQUIRED_PUBLIC_FILES.includes('docs/releases/v0.1.0-beta.1.md'),
+    'Beta release notes must be required'
+  );
+});
+
+test('Windows beta release notes explain installation, risk, data, and license boundaries', async () => {
+  const releaseNotes = await readFile(
+    new URL('../docs/releases/v0.1.0-beta.1.md', import.meta.url),
+    'utf8'
+  );
+
+  assert.match(releaseNotes, /Beta/i);
+  assert.match(releaseNotes, /Desk-Pet-Prompt-Book-Setup-0\.1\.0-beta\.1\.exe/);
+  assert.match(releaseNotes, /unsigned|未签名/i);
+  assert.match(releaseNotes, /SmartScreen/i);
+  assert.match(releaseNotes, /更多信息\s*->\s*仍要运行/);
+  assert.match(releaseNotes, /desktop|桌面/i);
+  assert.match(releaseNotes, /Start menu|开始菜单/i);
+  assert.match(releaseNotes, /does not start automatically|不会自动开机启动/i);
+  assert.match(releaseNotes, /%APPDATA%\\desk-pet-prompt-book/);
+  assert.match(releaseNotes, /uninstall|卸载/i);
+  assert.match(releaseNotes, /retains|保留/i);
+  assert.match(releaseNotes, /MIT/i);
+  assert.match(releaseNotes, /noncommercial|非商业/i);
+  assert.match(releaseNotes, /known limitations|已知限制/i);
+  assert.match(releaseNotes, /github\.com\/QIUQIU-KONG\/desk-pet-prompt-book\/issues/);
 });
 
 test('Windows verification helper uses the pinned toolchain and local verification record', async () => {

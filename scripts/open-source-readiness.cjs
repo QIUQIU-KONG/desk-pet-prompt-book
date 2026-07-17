@@ -18,6 +18,8 @@ const REQUIRED_PUBLIC_FILES = [
   'build/icon.ico',
   '.github/workflows/ci.yml',
   '.github/workflows/codeql.yml',
+  '.github/workflows/release.yml',
+  'docs/releases/v0.1.0-beta.1.md',
   '.github/dependabot.yml',
   '.github/ISSUE_TEMPLATE/bug_report.yml',
   '.github/ISSUE_TEMPLATE/feature_request.yml',

@@ -437,7 +437,7 @@ Expected: all malformed identity, source-branch, artifact-name, and checksum cas
 - Consumes: Task 1 build script, Task 4 release-contract commands, protected `origin/main`, and GitHub's built-in `GITHUB_TOKEN`.
 - Produces: a recoverable workflow artifact and a GitHub Pre-release containing exactly the setup executable and `SHA256SUMS.txt`.
 
-- [ ] **Step 1: Write failing workflow/readiness tests**
+- [x] **Step 1: Write failing workflow/readiness tests**
 
 Require `.github/workflows/release.yml` in `REQUIRED_PUBLIC_FILES`. Assert the workflow contains:
 
@@ -458,7 +458,7 @@ assert.match(release, /--prerelease/);
 
 Require the `gh release create` step to occur after verification and upload steps.
 
-- [ ] **Step 2: Verify RED**
+- [x] **Step 2: Verify RED**
 
 Run:
 
@@ -468,27 +468,28 @@ corepack pnpm exec node --test tests/open-source-readiness.test.mjs
 
 Expected: FAIL because the workflow and release notes are absent.
 
-- [ ] **Step 3: Create the release workflow**
+- [x] **Step 3: Create the release workflow**
 
 Use one `windows-latest` job with `timeout-minutes: 30`, `contents: write`, full checkout history, pinned pnpm/Node, frozen install, `git fetch origin main:refs/remotes/origin/main`, release identity verification, syntax/tests/readiness/audit, unsigned build, checksum preparation/verification, and `actions/upload-artifact@v4`.
 
-The final step uses the runner GitHub CLI only after every previous step succeeds:
+The final step uses the runner GitHub CLI only after every previous step succeeds. It creates an authenticated Draft with both assets, verifies the two asset names, then publishes the Draft as a Pre-release. On any error it deletes the Draft without deleting the immutable Git tag:
 
 ```powershell
 gh release create "${{ github.ref_name }}" `
   "dist/Desk-Pet-Prompt-Book-Setup-0.1.0-beta.1.exe" `
   "dist/SHA256SUMS.txt" `
   --verify-tag `
-  --prerelease `
+  --draft `
   --title "Desk Pet Prompt Book v0.1.0-beta.1" `
   --notes-file "docs/releases/v0.1.0-beta.1.md"
+gh release edit "${{ github.ref_name }}" --draft=false --prerelease
 ```
 
-- [ ] **Step 4: Write complete bilingual-use release notes**
+- [x] **Step 4: Write complete bilingual-use release notes**
 
 `docs/releases/v0.1.0-beta.1.md` states Beta status, direct installer steps, unsigned SmartScreen path `更多信息 -> 仍要运行`, shortcut behavior, no startup launch, stable data path, uninstall data retention, MIT-code/noncommercial-visual boundary, known limitations, and the issue URL.
 
-- [ ] **Step 5: Verify GREEN and commit**
+- [x] **Step 5: Verify GREEN and commit**
 
 Run:
 
