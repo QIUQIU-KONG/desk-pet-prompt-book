@@ -107,6 +107,12 @@ Display changes reapply the current fixed-size contract. Bounds are clamped to t
 
 Preview mode is not a security-equivalent substitute for Electron: clipboard permissions, the preload bridge, window sizing, and persistence behavior differ.
 
+## Windows Packaging And Release
+
+`electron-builder.yml` packages the runtime into one assisted per-user NSIS x64 installer. The stable application ID is `com.qiuqiukong.deskpetpromptbook`, the executable is `DeskPetPromptBook.exe`, and the public artifact follows `Desk-Pet-Prompt-Book-Setup-${version}.exe`. The installer creates desktop and Start menu shortcuts, does not add startup launch, and does not delete AppData during uninstall.
+
+`.github/workflows/release.yml` runs only for `v*` tags. It verifies that the tagged commit belongs to protected `origin/main`, runs the complete quality gate, builds with signing discovery disabled, creates and verifies `SHA256SUMS.txt`, uploads a recovery artifact, then publishes the GitHub Pre-release. A failed build cannot create the public Release.
+
 ## Security Posture
 
 The Electron window currently enables:

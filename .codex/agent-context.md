@@ -97,3 +97,14 @@
 - Git 历史仍约 104.83 MiB，包含旧视觉二进制和历史个人路径；详见 `.codex/open-source-history-cleanup-report.md`，未执行历史改写。
 - 用户已批准将完整历史保留在私有档案仓库，并从当前验证树创建只有一个根提交的公开仓库；迁移过程不得改写旧历史或删除私有档案。
 - 本轮新启动的本地预览服务返回 200；Codex 内置浏览器控制插件因运行时 `Cannot redefine property: process` 无法完成新的自动截图控制。此前 `1280×720` 浏览器验收、当前渲染器测试和连续两次真实 Electron 验收共同覆盖当前未改动的产品界面。
+
+## Windows Beta 发布实现（2026-07-17）
+
+- Beta 版本固定为 `0.1.0-beta.1`，目标标签为 `v0.1.0-beta.1`；当前仍在功能分支验收阶段，尚未创建公开 Release。
+- Windows 产品名为“桌宠提示词魔法书”，稳定应用 ID 为 `com.qiuqiukong.deskpetpromptbook`，主程序名为 `DeskPetPromptBook.exe`。
+- 使用 `electron-builder@26.15.3` 与 assisted per-user NSIS x64；只生成安装版，不生成便携版，不添加开机启动、自动更新或代码签名。
+- 安装包固定命名为 `Desk-Pet-Prompt-Book-Setup-0.1.0-beta.1.exe`，发布时必须同时提供 `SHA256SUMS.txt`。
+- `userData` 在任何日志和存储初始化前固定为 `%APPDATA%\desk-pet-prompt-book`；卸载器明确保留该目录。
+- 应用已强制单实例；第二次启动聚焦已有窗口。桌宠和展开面板右键均打开只含“退出桌宠”的原生菜单。
+- `build/icon.ico` 由已批准桌宠图生成六种尺寸，作为第 9 个非商业视觉文件记录。
+- 标签发布工作流会验证提交属于 `origin/main`、完成测试/readiness/audit、构建无签名安装包、验证 SHA-256，最后才公开 Pre-release。

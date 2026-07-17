@@ -522,11 +522,11 @@ Expected: readiness requires the release workflow and Release creation remains t
 - Consumes: the verified installer contract and stable data/lifecycle behavior.
 - Produces: accurate user-facing download, installation, warning, data-retention, license, and limitation guidance without claiming a stable or signed release.
 
-- [ ] **Step 1: Write failing documentation assertions**
+- [x] **Step 1: Write failing documentation assertions**
 
 Require both READMEs to mention `v0.1.0-beta.1`, GitHub Releases, `Desk-Pet-Prompt-Book-Setup-0.1.0-beta.1.exe`, unsigned/SmartScreen behavior, no startup launch, `%APPDATA%\desk-pet-prompt-book`, and nine visual files. Require the changelog to use `[0.1.0-beta.1]` with the release date instead of the old unreleased `0.1.0` heading.
 
-- [ ] **Step 2: Verify RED**
+- [x] **Step 2: Verify RED**
 
 Run:
 
@@ -536,19 +536,19 @@ corepack pnpm exec node --test tests/open-source-readiness.test.mjs
 
 Expected: FAIL on stale source-only Alpha and no-installer statements.
 
-- [ ] **Step 3: Update the public project status and install paths**
+- [x] **Step 3: Update the public project status and install paths**
 
 Describe the project as an early unsigned Windows Beta. Put the Release download path before source-development commands. Keep source commands for contributors. Explain that uninstall removes application files and shortcuts but intentionally retains the local prompt library.
 
-- [ ] **Step 4: Update limitations and contributor guidance**
+- [x] **Step 4: Update limitations and contributor guidance**
 
 Keep no signing, no auto-update, Windows-first, local unencrypted storage, and noncommercial visual limitations explicit. Document how future release contributors regenerate the icon, run release-contract checks, and never move an existing tag.
 
-- [ ] **Step 5: Record the completed release stage**
+- [x] **Step 5: Record the completed release stage**
 
 Add the installer/release acceptance criteria to `.codex/development-plan.md` and update `.codex/agent-context.md` with the fixed app ID, version, data path, exit path, packaging toolchain, and verification commands. Do not mark the Release published until Task 9 verifies GitHub assets.
 
-- [ ] **Step 6: Verify GREEN and commit**
+- [x] **Step 6: Verify GREEN and commit**
 
 Run:
 

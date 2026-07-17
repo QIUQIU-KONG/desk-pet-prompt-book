@@ -1,6 +1,6 @@
 # Contributing
 
-Thank you for helping improve Desk Pet Prompt Book. The project is source-stage alpha, but contributions should support the intended maintainable product rather than introduce throwaway MVP paths.
+Thank you for helping improve Desk Pet Prompt Book. The project is an early Windows Beta, and contributions should support the intended maintainable product rather than introduce throwaway MVP paths.
 
 By participating, you agree to follow the [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md).
 
@@ -79,6 +79,18 @@ The current contract is explicit-gesture clipboard access, local-only prompt sto
 Every visual contribution requires an **asset provenance** record. Include the creator or provider, model/tool when generated, reference sources, governing terms, modification history, attribution, and permission for the intended repository distribution.
 
 Do not add an image merely because it can be downloaded or generated. Do not label artwork MIT, CC BY, CC0, or public domain without evidence that the contributor can grant those rights. Changes to the nine distributed visual files must update `ASSET-LICENSE.md` and `docs/asset-provenance.md`.
+
+## Release Engineering
+
+Regenerate the Windows icon from the approved desktop-pet artwork with:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/generate-windows-icon.ps1
+```
+
+Release changes must keep `package.json`, the `v`-prefixed tag, `electron-builder.yml`, the expected setup file, and `SHA256SUMS.txt` consistent. Build locally with `corepack pnpm run build:win`, then run `corepack pnpm run release:prepare-assets` and `corepack pnpm run release:verify-assets`.
+
+Create a release tag only from a commit contained in protected `main`. Do not move an existing release tag or replace assets attached to an existing version; publish a new prerelease version for corrections. Never commit signing certificates, passwords, tokens, or generated `dist/` output.
 
 ## Pull Request Checklist
 

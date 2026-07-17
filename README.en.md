@@ -1,6 +1,6 @@
 # Desk Pet Prompt Book
 
-> Status: **source-stage alpha**. The repository provides runnable source code, not a production release, signed installer, or stability guarantee.
+> Status: **Windows Beta v0.1.0-beta.1**. The project provides an installable unsigned Windows test build and runnable source, without a production-stability guarantee.
 
 **Desktop-pet mode: a floating prompt spellbook**
 
@@ -48,14 +48,27 @@ Identical prompt bodies are not saved twice. Unassigned prompts are a pending st
 - Smart, rating, recently used, and recently updated sorting.
 - Local JSON persistence and last-view restoration.
 
-## Requirements
+## Download The Windows Beta
+
+Download `Desk-Pet-Prompt-Book-Setup-0.1.0-beta.1.exe` from [GitHub Releases](https://github.com/QIUQIU-KONG/desk-pet-prompt-book/releases/tag/v0.1.0-beta.1). The installed build requires Windows 10 or Windows 11; users do not need Node.js, pnpm, or Git.
+
+1. Run the installer and choose a per-user installation directory.
+2. Launch the app from its desktop or Start menu shortcut.
+3. The app does not start automatically with Windows.
+4. Right-click the pet or expanded panel and select `退出桌宠` to exit.
+
+This Beta is unsigned. Windows SmartScreen may show a protection warning. After confirming the file came from this repository's Release, choose `More info -> Run anyway`. Do not run the installer if you do not accept unsigned-binary risk; inspect the source and `SHA256SUMS.txt` instead.
+
+Uninstall removes application files and shortcuts but intentionally retains prompt data under `%APPDATA%\desk-pet-prompt-book`. See the [Beta release notes](docs/releases/v0.1.0-beta.1.md) for the complete behavior.
+
+## Development Requirements
 
 - Windows 10 or Windows 11.
 - Node.js 24 or later.
 - Corepack, distributed with Node.js.
 - Git.
 
-The project pins `pnpm@11.13.0`. Commands use Corepack to avoid relying on an unrelated global pnpm version.
+These dependencies are needed only for source development. The project pins `pnpm@11.13.0`, and commands use Corepack to avoid relying on an unrelated global pnpm version.
 
 ## Run From Source
 
@@ -76,13 +89,15 @@ Common commands:
 | `corepack pnpm run check:syntax` | Check runtime JavaScript syntax |
 | `corepack pnpm run audit:high` | Check for high-severity dependency vulnerabilities |
 | `corepack pnpm run readiness:report` | Print the repository readiness report |
+| `corepack pnpm run build:win` | Build the unsigned NSIS x64 installer |
+| `corepack pnpm run release:verify-assets` | Verify installer naming and the SHA-256 manifest |
 | `powershell -ExecutionPolicy Bypass -File scripts/verify-and-push.ps1` | Run the unified local verification gate |
 
 The browser preview is intended for layout and interaction development. Clipboard access depends on browser permission and secure-context rules and does not fully represent Electron behavior.
 
 ## Data And Privacy
 
-Prompts, projects, stages, keywords, and view state are stored at `data/prompts.json` under Electron's `userData` directory. A typical Windows location is `%APPDATA%\desk-pet-prompt-book\data\prompts.json`.
+Prompts, projects, stages, keywords, and view state are stored at `%APPDATA%\desk-pet-prompt-book\data\prompts.json`.
 
 - Clipboard text is read only after the user performs the capture gesture.
 - The prompt library has no intentional remote upload, telemetry, or cloud-sync path.
@@ -108,7 +123,8 @@ Runtime code does not depend on internal `.codex` development material.
 
 ## Current Limitations
 
-- This is Windows-first source-stage software without an installer, automatic updates, or code signing.
+- The installer is not code-signed, so Windows may show a SmartScreen warning.
+- There is no automatic update or portable build; later versions must be installed manually.
 - Local data is unencrypted, with no accounts, cloud sync, team collaboration, or telemetry.
 - Desktop clipboard automation can depend on Windows session permissions and still requires real-session verification.
 - Nine distributed visual files use a separate noncommercial license and are not MIT or Creative Commons assets; commercial use requires written permission from the project owner.
@@ -118,7 +134,7 @@ Runtime code does not depend on internal `.codex` development material.
 - Continue automated and real-desktop acceptance for pet and panel workflows.
 - Continue documenting image-provider and underlying-model terms, replacing assets when a clearer rights chain is needed.
 - Publish the verified current tree with a clean root history while retaining the complete earlier development history in a private archive.
-- Add signing, installation, upgrade, and release workflows before claiming a production release.
+- Complete code signing, upgrade migration, and automatic-update design before evaluating a stable production release.
 
 ## License
 
