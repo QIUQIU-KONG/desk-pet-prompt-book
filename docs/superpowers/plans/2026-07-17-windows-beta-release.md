@@ -31,12 +31,13 @@
 - Create: `electron-builder.yml`
 - Modify: `package.json`
 - Modify: `pnpm-lock.yaml`
+- Modify: `pnpm-workspace.yaml`
 
 **Interfaces:**
 - Consumes: the approved release identity and existing `src/**` runtime tree.
 - Produces: `pnpm run build:win`, an explicit electron-builder file allowlist, and deterministic NSIS metadata used by later artifact validation.
 
-- [ ] **Step 1: Write failing package metadata tests**
+- [x] **Step 1: Write failing package metadata tests**
 
 Create `tests/windows-packaging.test.mjs` with assertions equivalent to:
 
@@ -75,7 +76,7 @@ test('NSIS remains assisted per-user and preserves user data', () => {
 });
 ```
 
-- [ ] **Step 2: Verify RED**
+- [x] **Step 2: Verify RED**
 
 Run:
 
@@ -85,7 +86,7 @@ corepack pnpm exec node --test tests/windows-packaging.test.mjs
 
 Expected: FAIL because `electron-builder.yml`, Beta version metadata, dependency, and build script do not exist.
 
-- [ ] **Step 3: Add the packaging configuration**
+- [x] **Step 3: Add the packaging configuration**
 
 Set `package.json` version and scripts to:
 
@@ -135,7 +136,7 @@ nsis:
   deleteAppDataOnUninstall: false
 ```
 
-- [ ] **Step 4: Update the frozen lockfile**
+- [x] **Step 4: Update the frozen lockfile**
 
 Run:
 
@@ -145,7 +146,15 @@ corepack pnpm add --save-dev --save-exact electron-builder@26.15.3
 
 Expected: `package.json` retains exact versions and `pnpm-lock.yaml` records electron-builder without changing Electron `39.8.10`.
 
-- [ ] **Step 5: Verify GREEN and commit**
+pnpm `11.13.0` also discovers the transitive Squirrel-only `electron-winstaller` install script. Because this release targets NSIS only, record the supply-chain decision explicitly in `pnpm-workspace.yaml`:
+
+```yaml
+allowBuilds:
+  electron: true
+  electron-winstaller: false
+```
+
+- [x] **Step 5: Verify GREEN and commit**
 
 Run:
 
