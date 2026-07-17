@@ -1,0 +1,30 @@
+appId: com.qiuqiukong.deskpetpromptbook
+productName: 桌宠提示词魔法书
+executableName: DeskPetPromptBook
+asar: true
+directories:
+  buildResources: build
+  output: dist
+files:
+  - src/**/*
+  - package.json
+  - LICENSE
+  - ASSET-LICENSE.md
+  - PRIVACY.md
+win:
+  icon: build/icon.ico
+  target:
+    - target: nsis
+      arch:
+        - x64
+  artifactName: Desk-Pet-Prompt-Book-Setup-${version}.${ext}
+nsis:
+  oneClick: false
+  perMachine: false
+  allowElevation: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: always
+  createStartMenuShortcut: true
+  shortcutName: 桌宠提示词魔法书
+  runAfterFinish: true
+  deleteAppDataOnUninstall: false

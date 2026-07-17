@@ -11,6 +11,7 @@ flowchart LR
   Preload -->|"validated IPC calls"| Main["Electron main process\nsrc/electron/main.cjs"]
   Main --> Clipboard["System clipboard"]
   Main --> Store["Prompt store\nsrc/core/prompt-store.cjs"]
+  Main --> Lifecycle["Lifecycle policy\nsrc/electron/app-lifecycle.cjs"]
   Store --> Json["userData/data/prompts.json"]
 ```
 
@@ -23,8 +24,10 @@ flowchart LR
 - creating and positioning the transparent desktop window;
 - switching between the `220x220` pet mode and centered `1024x700` panel mode;
 - keeping drag movement inside display work areas without changing window size;
+- fixing `userData` to `%APPDATA%\desk-pet-prompt-book` before logging or store initialization;
+- acquiring the single-instance lock and focusing the existing window after a second launch;
+- providing one native right-click `退出桌宠` command for both window modes;
 - reading and writing the system clipboard;
-- resolving Electron's `userData` directory;
 - creating the prompt store with its concrete file path; and
 - registering explicit IPC handlers for prompt, project, stage, keyword, view-state, and window operations.
 
@@ -51,7 +54,7 @@ Renderer Node integration is disabled. The renderer loads local files and does n
 
 `src/core/prompt-store.cjs` contains data normalization, sorting, query, mutation, and JSON persistence. It depends on an injected file path and optionally injected clock/ID functions, which lets Node.js tests run without Electron.
 
-The store writes formatted JSON to a sibling `.tmp` file and renames it over the target. This avoids exposing a partially written JSON document, but it is not a transactional database and does not coordinate multiple concurrent application instances.
+The store writes formatted JSON to a sibling `.tmp` file and renames it over the target. This avoids exposing a partially written JSON document. The store is not a transactional multi-process database, so the Electron lifecycle layer prevents a second application instance from reaching the shared prompt file.
 
 ## Primary Data Flows
 
@@ -93,6 +96,8 @@ The product uses one `BrowserWindow`, not a separate panel window:
 - Panel mode: fixed `1024x700`, centered on the display matching the pet's current bounds.
 - Closing the panel restores the saved compact pet bounds.
 - Dragging is available only through explicit renderer zones and main-process pointer tracking.
+- A second application launch restores, shows, and focuses this existing window.
+- Right-clicking either mode opens a native menu; selecting `退出桌宠` calls Electron's normal quit flow.
 
 Display changes reapply the current fixed-size contract. Bounds are clamped to the selected display's work area.
 
@@ -101,6 +106,12 @@ Display changes reapply the current fixed-size contract. Bounds are clamped to t
 `scripts/preview-server.cjs` serves the repository through local HTTP for browser inspection. It resolves requests relative to the repository root and rejects path traversal. The default renderer entry is `src/renderer/index.html`.
 
 Preview mode is not a security-equivalent substitute for Electron: clipboard permissions, the preload bridge, window sizing, and persistence behavior differ.
+
+## Windows Packaging And Release
+
+`electron-builder.yml` packages the runtime into one assisted per-user NSIS x64 installer. The stable application ID is `com.qiuqiukong.deskpetpromptbook`, the executable is `DeskPetPromptBook.exe`, and the public artifact follows `Desk-Pet-Prompt-Book-Setup-${version}.exe`. The installer creates desktop and Start menu shortcuts, does not add startup launch, and does not delete AppData during uninstall.
+
+`.github/workflows/release.yml` runs only for `v*` tags. It verifies that the tagged commit belongs to protected `origin/main`, runs the complete quality gate, builds with signing discovery disabled, creates and verifies `SHA256SUMS.txt`, uploads a recovery artifact, then publishes the GitHub Pre-release. A failed build cannot create the public Release.
 
 ## Security Posture
 
@@ -118,6 +129,7 @@ These controls reduce renderer privileges but do not encrypt local data or prote
 
 - `tests/prompt-store.test.mjs` verifies data behavior and persistence.
 - `tests/electron-pet-shell.test.mjs` verifies Electron window and IPC contracts.
+- `tests/electron-app-lifecycle.test.mjs` verifies stable data paths, single-instance ownership, focus, and native exit behavior without launching Electron.
 - `tests/desktop-pet-preview.test.mjs` verifies renderer structure, asset geometry, and interaction contracts.
 - `tests/open-source-readiness.test.mjs` verifies repository portability, package metadata, documentation, and asset boundaries.
 

@@ -1,6 +1,6 @@
 {
   "name": "desk-pet-prompt-book",
-  "version": "0.1.0",
+  "version": "0.1.0-beta.1",
   "private": true,
   "description": "Floating magic-book desktop pet for capturing and organizing reusable prompts.",
   "license": "MIT",
@@ -29,13 +29,18 @@
     "start": "electron .",
     "pet": "pnpm start",
     "preview": "node scripts/preview-server.cjs",
-    "check:syntax": "node --check src/core/prompt-store.cjs && node --check src/electron/main.cjs && node --check src/electron/preload.cjs && node --check src/renderer/pet-preview.js && node --check src/renderer/prompt-entry-view.js && node --check src/renderer/prompt-pagination.js && node --check scripts/open-source-readiness.cjs && node --check scripts/preview-server.cjs",
+    "build:win": "electron-builder --win nsis --x64 --publish never",
+    "release:verify-tag": "node scripts/release-contract.cjs verify-tag",
+    "release:prepare-assets": "node scripts/release-contract.cjs prepare-assets",
+    "release:verify-assets": "node scripts/release-contract.cjs verify-assets",
+    "check:syntax": "node --check src/core/prompt-store.cjs && node --check src/electron/app-lifecycle.cjs && node --check src/electron/main.cjs && node --check src/electron/preload.cjs && node --check src/renderer/pet-preview.js && node --check src/renderer/prompt-entry-view.js && node --check src/renderer/prompt-pagination.js && node --check scripts/open-source-readiness.cjs && node --check scripts/preview-server.cjs && node --check scripts/release-contract.cjs",
     "test": "node --test tests/*.test.mjs",
     "audit:high": "pnpm audit --audit-level high --registry https://registry.npmjs.org",
     "readiness:report": "node scripts/open-source-readiness.cjs --json",
     "readiness": "node scripts/open-source-readiness.cjs --strict"
   },
   "devDependencies": {
-    "electron": "39.8.10"
+    "electron": "39.8.10",
+    "electron-builder": "26.15.3"
   }
 }

@@ -2,7 +2,7 @@
 
 ## Status
 
-The eight distributed visual files are governed by the [Desk Pet Prompt Book Noncommercial Visual Asset License, Version 1.0](../ASSET-LICENSE.md). This document records provenance and known rights limitations; the license file defines the permission granted.
+The nine distributed visual files are governed by the [Desk Pet Prompt Book Noncommercial Visual Asset License, Version 1.0](../ASSET-LICENSE.md). This document records provenance and known rights limitations; the license file defines the permission granted.
 
 The primary book artwork was created through an Image2/APIMart workflow during product design. The Electron-safe butterfly was created with built-in image generation and local chroma-key extraction, while the glow overlay was generated deterministically with local raster tooling. The retained records do not independently establish the complete underlying model-provider rights chain or confirm that generated outputs may be sublicensed under CC BY 4.0, CC0, or another open asset license.
 
@@ -18,6 +18,7 @@ The primary book artwork was created through an Image2/APIMart workflow during p
 | `src/renderer/assets/page-mask-right.png` | Generated locally from the selected panel geometry | Derivative interaction mask |
 | `docs/images/desktop-pet-preview.png` | Isolated real Electron `220x220` capture at 2x device scale, centered on a pure-white `1280x900` documentation canvas | Contains the selected pet artwork and Electron-safe runtime effects without user data |
 | `docs/images/app-preview.png` | Real Electron panel screenshot captured with isolated temporary `userData` and anonymous Agent-development demo records | Contains the selected panel artwork and current UI without user prompt data |
+| `build/icon.ico` | Deterministic local multi-size ICO generated from `pet-book-body-v5-alpha.png` with `scripts/generate-windows-icon.ps1` | Derivative Windows application and installer icon |
 
 The mask-generation process is implemented in `scripts/generate-page-masks.ps1`. Deriving a mask locally does not remove restrictions that may apply to the source panel image.
 

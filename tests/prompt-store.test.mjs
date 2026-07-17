@@ -81,6 +81,36 @@ test('concurrent prompt mutations are serialized without losing data', async () 
   assert.equal(new Set(data.prompts.map((prompt) => prompt.content)).size, 20);
 });
 
+test('whenIdle resolves only after queued prompt mutations reach disk', async () => {
+  const store = await createTestStore();
+  const mutation = store.captureText('Drain this mutation before exit');
+
+  await store.whenIdle();
+  const persisted = JSON.parse(await readFile(store.filePath, 'utf8'));
+
+  assert.equal(persisted.prompts[0].content, 'Drain this mutation before exit');
+  assert.equal((await mutation).status, 'saved');
+});
+
+test('whenIdle reports a queued prompt mutation failure', async () => {
+  const dir = await mkdtemp(path.join(tmpdir(), 'desk-pet-store-failure-'));
+  const blockedParent = path.join(dir, 'not-a-directory');
+  await writeFile(blockedParent, 'blocked', 'utf8');
+  const store = createPromptStore({
+    filePath: path.join(blockedParent, 'prompts.json')
+  });
+
+  const mutationError = await store.captureText('This write must fail').then(
+    () => assert.fail('The blocked prompt mutation unexpectedly succeeded.'),
+    (error) => error
+  );
+
+  await assert.rejects(store.whenIdle(), (error) => {
+    assert.equal(error, mutationError);
+    return true;
+  });
+});
+
 test('damaged primary storage recovers from backup and quarantines the invalid file', async () => {
   const dir = await mkdtemp(path.join(tmpdir(), 'desk-pet-store-'));
   const filePath = path.join(dir, 'prompts.json');

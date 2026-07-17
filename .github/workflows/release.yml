@@ -1,0 +1,196 @@
+name: Windows Beta Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build-windows:
+    name: Verify and build Windows Beta
+    runs-on: windows-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+
+    steps:
+      - name: Check out tagged source without persisted credentials
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Fetch protected main
+        shell: pwsh
+        run: git fetch origin main:refs/remotes/origin/main
+
+      - name: Reject commits outside protected main
+        shell: pwsh
+        run: |
+          git merge-base --is-ancestor HEAD origin/main
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Tagged commit is not contained in origin/main.'
+          }
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.13.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify release identity and source
+        run: pnpm run release:verify-tag
+
+      - name: Check syntax
+        run: pnpm run check:syntax
+
+      - name: Run tests
+        run: pnpm test
+
+      - name: Check repository readiness
+        run: pnpm run readiness
+
+      - name: Audit high-severity vulnerabilities
+        run: pnpm audit --audit-level high --registry https://registry.npmjs.org
+
+      - name: Build unsigned NSIS installer
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+        run: pnpm run build:win
+
+      - name: Prepare release checksum
+        run: pnpm run release:prepare-assets
+
+      - name: Verify release assets
+        run: pnpm run release:verify-assets
+
+      - name: Upload verified release inputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-beta-${{ github.ref_name }}
+          path: |
+            dist/Desk-Pet-Prompt-Book-Setup-0.1.0-beta.1.exe
+            dist/SHA256SUMS.txt
+            docs/releases/v0.1.0-beta.1.md
+          if-no-files-found: error
+          retention-days: 14
+
+  publish-release:
+    name: Publish GitHub Pre-release
+    needs: build-windows
+    runs-on: windows-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download verified release inputs
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-beta-${{ github.ref_name }}
+          path: release-artifacts
+
+      - name: Create and publish owned draft
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $PSNativeCommandUseErrorActionPreference = $false
+          $tag = $env:GITHUB_REF_NAME
+          $repository = $env:GITHUB_REPOSITORY
+          $createdReleaseId = $null
+          $publishAttempted = $false
+          $expectedAssets = @(
+            'Desk-Pet-Prompt-Book-Setup-0.1.0-beta.1.exe',
+            'SHA256SUMS.txt'
+          )
+
+          if ($tag -notmatch '^v\d+\.\d+\.\d+-[0-9A-Za-z]+(?:[.-][0-9A-Za-z]+)*$') {
+            throw "Unsafe or non-prerelease tag: $tag"
+          }
+
+          & gh release view $tag --repo $repository --json id *> $null
+          if ($LASTEXITCODE -eq 0) {
+            throw "A GitHub release already exists for $tag."
+          }
+
+          $notesPath = 'release-artifacts/docs/releases/v0.1.0-beta.1.md'
+          $installerPath = 'release-artifacts/dist/Desk-Pet-Prompt-Book-Setup-0.1.0-beta.1.exe'
+          $checksumPath = 'release-artifacts/dist/SHA256SUMS.txt'
+          $payload = @{
+            tag_name = $tag
+            target_commitish = $env:GITHUB_SHA
+            name = 'Desk Pet Prompt Book v0.1.0-beta.1'
+            body = Get-Content -Raw -LiteralPath $notesPath
+            draft = $true
+            prerelease = $false
+            make_latest = 'false'
+          } | ConvertTo-Json -Compress
+
+          try {
+            $createOutput = $payload | gh api --method POST "repos/$repository/releases" --input - 2>&1
+            if ($LASTEXITCODE -ne 0) {
+              throw "Unable to create release draft: $createOutput"
+            }
+
+            $createdReleaseId = [long](($createOutput | ConvertFrom-Json).id)
+            if ($createdReleaseId -le 0) {
+              throw 'GitHub did not return the created release ID.'
+            }
+
+            & gh release upload $tag $installerPath $checksumPath --repo $repository
+            if ($LASTEXITCODE -ne 0) {
+              throw 'Unable to upload release assets.'
+            }
+
+            $actualAssets = @(gh api "repos/$repository/releases/$createdReleaseId" --jq '.assets[].name')
+            if ($LASTEXITCODE -ne 0) {
+              throw 'Unable to verify draft release assets.'
+            }
+            if ($actualAssets.Count -ne $expectedAssets.Count) {
+              throw "Draft release contains $($actualAssets.Count) assets; expected $($expectedAssets.Count)."
+            }
+            foreach ($asset in $expectedAssets) {
+              if ($actualAssets -notcontains $asset) {
+                throw "Draft release is missing expected asset: $asset"
+              }
+            }
+
+            $publishAttempted = $true
+            & gh api --method PATCH "repos/$repository/releases/$createdReleaseId" -F draft=false -F prerelease=true *> $null
+            if ($LASTEXITCODE -ne 0) {
+              throw 'Unable to publish the verified draft as a Pre-release.'
+            }
+          } catch {
+            if ($null -ne $createdReleaseId -and -not $publishAttempted) {
+              $draftState = & gh api "repos/$repository/releases/$createdReleaseId" --jq '.draft' 2>$null
+              $draftQueryExitCode = $LASTEXITCODE
+              if ($draftQueryExitCode -eq 0 -and "$draftState".Trim() -eq 'true') {
+                & gh api --method DELETE "repos/$repository/releases/$createdReleaseId" 2>$null
+                if ($LASTEXITCODE -ne 0) {
+                  Write-Warning "Unable to delete failed draft release ID $createdReleaseId."
+                }
+              } else {
+                Write-Warning "Preserving release ID $createdReleaseId because its draft state could not be confirmed."
+              }
+            } elseif ($null -ne $createdReleaseId) {
+              Write-Warning "Publish result for release ID $createdReleaseId is ambiguous; preserving it for inspection."
+            }
+            throw
+          }

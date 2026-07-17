@@ -5,6 +5,7 @@ import assert from 'node:assert/strict';
 
 const packagePath = new URL('../package.json', import.meta.url);
 const mainPath = new URL('../src/electron/main.cjs', import.meta.url);
+const lifecyclePath = new URL('../src/electron/app-lifecycle.cjs', import.meta.url);
 const preloadPath = new URL('../src/electron/preload.cjs', import.meta.url);
 const rendererPath = new URL('../src/renderer/index.html', import.meta.url);
 
@@ -16,7 +17,42 @@ test('electron shell project exposes a pet launch script', async () => {
   assert.equal(packageJson.scripts.start, 'electron .');
   assert.equal(packageJson.scripts.pet, 'pnpm start');
   assert.equal(packageJson.devDependencies.electron, '39.8.10');
+  assert.match(packageJson.scripts['check:syntax'], /src\/electron\/app-lifecycle\.cjs/);
   assert.ok(Number(electronVersion.split('.')[0]) >= 39);
+});
+
+test('electron configures stable user data before logging or prompt storage', async () => {
+  const main = await readFile(mainPath, 'utf8');
+
+  assert.equal(existsSync(lifecyclePath), true);
+  assert.match(main, /configureStableUserDataPath\(app\)/);
+  assert.ok(main.indexOf('configureStableUserDataPath(app)') < main.indexOf("process.on('uncaughtException'"));
+  assert.ok(main.indexOf('configureStableUserDataPath(app)') < main.indexOf('function getPromptStore'));
+});
+
+test('electron acquires one application instance and focuses the existing window', async () => {
+  const main = await readFile(mainPath, 'utf8');
+
+  assert.match(main, /setupSingleInstance\(app,/);
+  assert.match(main, /focusPrimaryWindow\(primaryWindow\)/);
+  assert.ok(main.indexOf('setupSingleInstance(app,') < main.indexOf('app.whenReady()'));
+  assert.match(main, /if \(isPrimaryInstance\)/);
+});
+
+test('electron attaches a native right-click exit menu to the pet and panel window', async () => {
+  const main = await readFile(mainPath, 'utf8');
+  const createWindow = main.match(/function createPetWindow\(\)[\s\S]*?\n\}/)?.[0] ?? '';
+
+  assert.match(createWindow, /attachExitContextMenu\(petWindow, Menu, requestApplicationQuit\)/);
+});
+
+test('electron drains queued prompt writes before normal application exit', async () => {
+  const main = await readFile(mainPath, 'utf8');
+
+  assert.match(main, /createQuitCoordinator/);
+  assert.match(main, /promptStore\?\.whenIdle\(\)/);
+  assert.match(main, /quit wait failed/);
+  assert.match(main, /void requestApplicationQuit\(\)/);
 });
 
 test('electron main creates a transparent always-on-top frameless pet window', async () => {

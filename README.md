@@ -1,6 +1,6 @@
 # 魔法书桌宠提示词库
 
-> 状态：**源码开发阶段（Alpha）**。当前提供可运行源码，不提供正式安装包、签名发行版或生产稳定性承诺。
+> 状态：**Windows Beta v0.1.0-beta.1**。提供可安装的未签名 Windows 测试版和可运行源码，不承诺生产稳定性。
 
 **桌宠模式：漂浮的提示词魔法书**
 
@@ -50,14 +50,27 @@
 - 综合、高评分、最近使用和最近更新排序。
 - 本地 JSON 持久化与上次视图恢复。
 
-## 环境要求
+## 下载 Windows Beta
+
+在 [GitHub Releases](https://github.com/QIUQIU-KONG/desk-pet-prompt-book/releases/tag/v0.1.0-beta.1) 下载 `Desk-Pet-Prompt-Book-Setup-0.1.0-beta.1.exe`。安装版只要求 Windows 10 或 Windows 11，不需要另外安装 Node.js、pnpm 或 Git。
+
+1. 双击安装包，按向导选择当前用户的安装目录。
+2. 安装完成后可通过桌面或开始菜单快捷方式启动。
+3. 应用不会自动开机启动。
+4. 右键桌宠或展开面板，选择“退出桌宠”可正常退出。
+
+这是未签名 Beta。Windows SmartScreen 可能显示“Windows 已保护你的电脑”；确认文件来自本仓库 Release 后，可选择 `更多信息 -> 仍要运行`。无法接受未签名程序风险时，请不要运行安装包，可先审查源码和 `SHA256SUMS.txt`。
+
+卸载会移除应用文件和快捷方式，但会保留 `%APPDATA%\desk-pet-prompt-book` 中的提示词数据，避免误删。完整说明见 [Beta 发布说明](docs/releases/v0.1.0-beta.1.md)。
+
+## 开发环境要求
 
 - Windows 10 或 Windows 11。
 - Node.js 24 或更高版本。
 - 随 Node.js 提供的 Corepack。
 - Git。
 
-项目固定使用 `pnpm@11.13.0`。为避免全局 pnpm 版本漂移，以下命令均通过 Corepack 运行。
+以下依赖只用于从源码开发。项目固定使用 `pnpm@11.13.0`，命令均通过 Corepack 运行，避免全局 pnpm 版本漂移。
 
 ## 从源码运行
 
@@ -78,13 +91,15 @@ corepack pnpm start
 | `corepack pnpm run check:syntax` | 检查运行时 JavaScript 语法 |
 | `corepack pnpm run audit:high` | 检查高危依赖漏洞 |
 | `corepack pnpm run readiness:report` | 输出仓库公开准备报告 |
+| `corepack pnpm run build:win` | 构建未签名 NSIS x64 安装包 |
+| `corepack pnpm run release:verify-assets` | 校验安装包名称与 SHA-256 清单 |
 | `powershell -ExecutionPolicy Bypass -File scripts/verify-and-push.ps1` | 运行统一的本地完整质量门 |
 
 浏览器预览主要用于布局和交互开发。浏览器能否读写剪贴板取决于浏览器权限与安全上下文，它不等同于 Electron 桌面行为。
 
 ## 数据与隐私
 
-提示词、项目、阶段、关键词和视图状态保存在 Electron `userData` 目录下的 `data/prompts.json`。Windows 的常见位置是 `%APPDATA%\desk-pet-prompt-book\data\prompts.json`。
+提示词、项目、阶段、关键词和视图状态固定保存在 `%APPDATA%\desk-pet-prompt-book\data\prompts.json`。
 
 - 应用只在用户执行捕获手势后读取剪贴板文本。
 - 提示词库没有设计任何远程上传、遥测或云同步。
@@ -110,20 +125,21 @@ docs/         架构、隐私、资产来源和截图
 
 ## 当前限制
 
-- 目前是 Windows 优先的源码阶段产品，没有安装器、自动更新或代码签名。
+- 当前安装包没有代码签名，Windows 可能显示 SmartScreen 警告。
+- 目前没有自动更新或便携版，需要手动安装后续版本。
 - 本地数据未加密，也没有账户、云同步、团队协作或遥测。
 - 桌面剪贴板自动化可能受 Windows 会话权限影响，需要在真实交互会话中复核。
-- 8 个分发视觉文件采用单独的非商业许可，不属于 MIT 或 Creative Commons 资产；商业使用需要项目所有者书面授权。
+- 9 个分发视觉文件采用单独的非商业许可，不属于 MIT 或 Creative Commons 资产；商业使用需要项目所有者书面授权。
 
 ## 路线
 
 - 持续完善桌宠与面板交互的自动化和真实桌面验收。
 - 继续补充视觉资源的生成来源与底层模型条款证据，必要时替换权利链更清晰的资产。
 - 公开仓库使用经验证当前代码树的干净根历史；完整旧开发历史继续保留在私有档案中。
-- 完成签名、安装、升级与发布流程后再进入正式发行阶段。
+- 完成代码签名、升级迁移和自动更新设计后再评估正式稳定版。
 
 ## 许可
 
 本仓库采用 **MIT 代码与非商业视觉资产** 的混合许可。程序代码和普通项目文档使用 [MIT License](LICENSE)，允许商业使用和闭源衍生，但必须保留版权与许可声明。
 
-仓库中的 8 个分发视觉文件不在 MIT 范围内。它们允许个人学习、教育、研究、评估和非商业贡献或 Fork，但禁止未经书面授权的商业使用、出售和商业再授权。详见 [非商业视觉资产许可](ASSET-LICENSE.md) 与 [来源记录](docs/asset-provenance.md)。
+仓库中的 9 个分发视觉文件不在 MIT 范围内。它们允许个人学习、教育、研究、评估和非商业贡献或 Fork，但禁止未经书面授权的商业使用、出售和商业再授权。详见 [非商业视觉资产许可](ASSET-LICENSE.md) 与 [来源记录](docs/asset-provenance.md)。

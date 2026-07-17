@@ -86,7 +86,7 @@
 ## 公开仓库发布基线（2026-07-16）
 
 - 运行时已迁移到 `src/renderer`，只保留 6 个运行时 PNG；`docs/images/app-preview.png` 已更新为真实 Electron `1024x700` 展开面板截图，使用隔离临时 `userData` 和匿名 Agent 开发演示数据生成。
-- 程序代码和普通项目文档使用 MIT；8 个分发视觉文件使用 `Desk Pet Prompt Book Noncommercial Visual Asset License, Version 1.0`，允许个人、教育、研究、评估与非商业贡献/Fork，禁止未经书面授权的商业使用、出售和商业再授权，不得宣称为 CC BY 4.0、CC0、MIT 或 OSI 开源资产。
+- 程序代码和普通项目文档使用 MIT；9 个分发视觉文件使用 `Desk Pet Prompt Book Noncommercial Visual Asset License, Version 1.0`，其中包含由桌宠魔法书画面派生的 Windows ICO；允许个人、教育、研究、评估与非商业贡献/Fork，禁止未经书面授权的商业使用、出售和商业再授权，不得宣称为 CC BY 4.0、CC0、MIT 或 OSI 开源资产。
 - 中英文 README 同时展示实际桌宠运行状态和展开后的书页工作台；产品理念定稿为 `Build agents with clarity. Let prompts become systems.`，中文为“明确地构建代理，让提示词成为系统。”。
 - `docs/images/desktop-pet-preview.png` 使用隔离真实 Electron `220×220` 窗口在 DPR 2 下捕获，以 `704×704` 放置于纯白 `1280×900` 文档画布 `(288, 98)`；该白底只属于 README 图片，不改变桌宠透明运行窗口。
 - 已提供中英文 README、隐私、安全、贡献、行为准则、变更记录、架构、数据与资产来源文档。
@@ -97,3 +97,29 @@
 - Git 历史仍约 104.83 MiB，包含旧视觉二进制和历史个人路径；详见 `.codex/open-source-history-cleanup-report.md`，未执行历史改写。
 - 用户已批准将完整历史保留在私有档案仓库，并从当前验证树创建只有一个根提交的公开仓库；迁移过程不得改写旧历史或删除私有档案。
 - 本轮新启动的本地预览服务返回 200；Codex 内置浏览器控制插件因运行时 `Cannot redefine property: process` 无法完成新的自动截图控制。此前 `1280×720` 浏览器验收、当前渲染器测试和连续两次真实 Electron 验收共同覆盖当前未改动的产品界面。
+
+## Windows Beta 发布实现（2026-07-17）
+
+- Beta 版本固定为 `0.1.0-beta.1`，目标标签为 `v0.1.0-beta.1`；当前仍在功能分支验收阶段，尚未创建公开 Release。
+- Windows 产品名为“桌宠提示词魔法书”，稳定应用 ID 为 `com.qiuqiukong.deskpetpromptbook`，主程序名为 `DeskPetPromptBook.exe`。
+- 使用 `electron-builder@26.15.3` 与 assisted per-user NSIS x64；只生成安装版，不生成便携版，不添加开机启动、自动更新或代码签名。
+- 安装包固定命名为 `Desk-Pet-Prompt-Book-Setup-0.1.0-beta.1.exe`，发布时必须同时提供 `SHA256SUMS.txt`。
+- `userData` 在任何日志和存储初始化前固定为 `%APPDATA%\desk-pet-prompt-book`；卸载器明确保留该目录。
+- 应用已强制单实例；第二次启动聚焦已有窗口。桌宠和展开面板右键均打开只含“退出桌宠”的原生菜单。
+- `build/icon.ico` 由已批准桌宠图生成六种尺寸，作为第 9 个非商业视觉文件记录。
+- 标签发布工作流会验证提交属于 `origin/main`、完成测试/readiness/audit、构建无签名安装包、验证 SHA-256，最后才公开 Pre-release。
+- pnpm 11 的依赖约束集中在 `pnpm-workspace.yaml`：拒绝无关的 `electron-winstaller` 安装脚本，并将 electron-builder 的 `@electron/get@3.0.0`、`ejs@3.1.8`、`semver@5.5.0` 精确修补到兼容版本 `3.1.0`、`3.1.10`、`5.7.2`；当前审计为 0 已知漏洞。
+
+## Windows Beta 本机验收（2026-07-17）
+
+- 审查加固后的最终质量门通过：语法检查、123 项测试、严格 readiness、依赖审计和 Git 空白检查均成功；依赖未变化，因此使用 `-SkipInstall`，总耗时约 `14s`。
+- 最终未签名安装包为 `Desk-Pet-Prompt-Book-Setup-0.1.0-beta.1.exe`，大小 `103623334` 字节，SHA-256 为 `dd69f8403f85364625b3a8657852f8d7ecc01dca6db185ecbaf58ae085e4fd41`；`release:prepare-assets` 与 `release:verify-assets` 均通过。
+- 安装器作为当前用户写入 HKCU，默认安装到 `%LOCALAPPDATA%\Programs\DeskPetPromptBook`；桌面和开始菜单快捷方式均指向 `DeskPetPromptBook.exe`，Run 与 Startup 中没有应用启动项。
+- 安装版第一次启动保持运行，第二次启动以 0 码退出，系统中只保留 1 个安装版主进程。
+- Windows UI Automation 实测桌宠窗口为 `220×220`、展开面板为 `1024×700`；两种状态右键都能发现原生 `ControlType.MenuItem`“退出桌宠”，调用后进程以 0 码退出。
+- 卸载后安装目录、两个快捷方式和卸载项均消失，`%APPDATA%\desk-pet-prompt-book` 中的验收标记保留，既有提示词数据文件前后哈希差异为 0；随后已删除验收标记并重新安装同一构建。
+- 审查加固将标签工作流拆分为只读 Windows 构建任务和仅下载已验证产物的写权限发布任务；`origin/main` 祖先校验先于依赖安装，标签从 `GITHUB_REF_NAME` 环境变量读取。发布前失败只在确认本次 Release 仍为草稿时删除；PATCH 结果不确定时保留 Release，避免误删已经发布的版本。
+- 发布测试会抽取并执行 workflow 中的真实 PowerShell，通过假的 `gh` 覆盖恶意标签、既有 Release、资产不符、PATCH 响应不确定和成功发布；独立复审已确认无剩余 Critical/Important finding。
+- 提示词存储新增 `whenIdle()` 写队列边界，并保留首个写入失败供退出路径记录；桌宠右键退出和 `window-all-closed` 共用幂等退出协调器，最多等待 5 秒，失败会写入 `quit wait failed` 日志后继续单次退出。
+- 安装版真实前台验收通过：先最小化桌宠并将 Explorer 窗口置为前台，第二次启动以 0 码退出，已有桌宠恢复且其 HWND 成为前台，安装版根进程数保持 1；此后单实例与聚焦代码未再改动。
+- 最终哈希安装版退出验收通过：UI Automation 发现并调用“退出桌宠”，主进程退出码为 0、残留安装版进程为 0、提示词数据 SHA-256 前后均为 `55456A7E0427D9800B8E6537D811AF6541C25A0D83C0009B6C1F46AD5EE5B87B`，新增 `quit wait failed` 日志为 0。

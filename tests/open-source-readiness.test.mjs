@@ -226,30 +226,50 @@ test('public documentation states project status, privacy, and license boundarie
   assert.match(assetLicense, /AI-generated content/i);
   assert.doesNotMatch(assetLicense, /license-pending/i);
   assert.match(assetLicense, /docs\/images\/desktop-pet-preview\.png/);
-  assert.match(readme, /源码开发阶段（Alpha）/);
+  assert.match(readme, /Windows Beta/);
+  assert.match(readme, /v0\.1\.0-beta\.1/);
+  assert.match(readme, /GitHub Releases/);
+  assert.match(readme, /Desk-Pet-Prompt-Book-Setup-0\.1\.0-beta\.1\.exe/);
+  assert.match(readme, /SmartScreen/);
+  assert.match(readme, /不会自动开机启动/);
+  assert.match(readme, /卸载[\s\S]*保留/);
+  assert.doesNotMatch(readme, /没有安装器/);
   assert.match(readme, /docs\/images\/desktop-pet-preview\.png[\s\S]*docs\/images\/app-preview\.png/);
   assert.match(readme, /docs\/images\/app-preview\.png/);
   assert.match(readme, /^## 产品理念$/m);
   assert.match(readme, /Build agents with clarity\. Let prompts become systems\./);
   assert.match(readme, /明确地构建代理，让提示词成为系统。/);
-  assert.match(readme, /8 个分发视觉文件/);
+  assert.match(readme, /9 个分发视觉文件/);
   assert.match(readme, /MIT 代码与非商业视觉资产/);
-  assert.match(englishReadme, /source-stage alpha/i);
+  assert.match(englishReadme, /Windows Beta/i);
+  assert.match(englishReadme, /v0\.1\.0-beta\.1/);
+  assert.match(englishReadme, /GitHub Releases/);
+  assert.match(englishReadme, /Desk-Pet-Prompt-Book-Setup-0\.1\.0-beta\.1\.exe/);
+  assert.match(englishReadme, /SmartScreen/);
+  assert.match(englishReadme, /does not start automatically/i);
+  assert.match(englishReadme, /uninstall[\s\S]*retain/i);
+  assert.doesNotMatch(englishReadme, /without an installer/i);
   assert.match(englishReadme, /docs\/images\/desktop-pet-preview\.png[\s\S]*docs\/images\/app-preview\.png/);
   assert.match(englishReadme, /^## Product Philosophy$/m);
   assert.match(englishReadme, /Build agents with clarity\. Let prompts become systems\./);
-  assert.match(englishReadme, /Eight distributed visual files/);
+  assert.match(englishReadme, /Nine distributed visual files/);
   assert.match(englishReadme, /MIT-licensed code with noncommercial visual assets/i);
   assert.match(privacy, /clipboard/i);
   assert.match(privacy, /not encrypted/i);
   assert.match(security, /privately/i);
   assert.match(contributing, /asset provenance/i);
+  assert.match(contributing, /nine distributed visual files/i);
+  assert.match(contributing, /generate-windows-icon\.ps1/);
+  assert.match(contributing, /release:verify-assets/);
+  assert.match(contributing, /do not move an existing release tag/i);
   assert.match(codeOfConduct, /Contributor Covenant Code of Conduct/);
   assert.match(codeOfConduct, /version 2\.1/i);
-  assert.match(changelog, /0\.1\.0.*Unreleased/is);
+  assert.match(changelog, /\[0\.1\.0-beta\.1\]\s+-\s+2026-07-17/);
+  assert.match(changelog, /unsigned Windows Beta installer/i);
   assert.match(architecture, /Electron main process/i);
   assert.match(dataAndPrivacy, /prompts\.json/);
   assert.match(assetProvenance, /Noncommercial Visual Asset License/i);
+  assert.match(assetProvenance, /nine distributed visual files/i);
   assert.doesNotMatch(
     [assetLicense, readme, englishReadme, contributing, changelog, assetProvenance].join('\n'),
     /license-pending/i
@@ -257,8 +277,10 @@ test('public documentation states project status, privacy, and license boundarie
   assert.match(assetProvenance, /docs\/images\/desktop-pet-preview\.png/);
   assert.match(assetLicense, /pet-safe-glow-v1\.png/);
   assert.match(assetLicense, /pet-safe-butterfly-v1\.png/);
+  assert.match(assetLicense, /build\/icon\.ico/);
   assert.match(assetProvenance, /pet-safe-glow-v1\.png/);
   assert.match(assetProvenance, /pet-safe-butterfly-v1\.png/);
+  assert.match(assetProvenance, /build\/icon\.ico/);
   assert.ok(existsSync(petScreenshotUrl));
   assert.ok(existsSync(appScreenshotUrl));
 
@@ -288,6 +310,7 @@ test('repository automation enforces verification and structured contributions',
   const [
     ci,
     codeql,
+    release,
     dependabot,
     bugReport,
     featureRequest,
@@ -296,6 +319,7 @@ test('repository automation enforces verification and structured contributions',
   ] = await Promise.all([
     '.github/workflows/ci.yml',
     '.github/workflows/codeql.yml',
+    '.github/workflows/release.yml',
     '.github/dependabot.yml',
     '.github/ISSUE_TEMPLATE/bug_report.yml',
     '.github/ISSUE_TEMPLATE/feature_request.yml',
@@ -316,6 +340,59 @@ test('repository automation enforces verification and structured contributions',
   assert.match(codeql, /permissions:[\s\S]*security-events: write/);
   assert.match(codeql, /github\/codeql-action\/init@v3/);
   assert.match(codeql, /github\/codeql-action\/analyze@v3/);
+  assert.match(release, /tags:\s*\n\s+- ['"]v\*['"]/);
+  assert.match(release, /^permissions:\s*\n\s+contents: read$/m);
+  assert.match(release, /windows-latest/);
+  assert.match(release, /fetch-depth: 0/);
+  assert.match(release, /persist-credentials: false/);
+  assert.match(release, /version: 11\.13\.0/);
+  assert.match(release, /node-version: 24/);
+  assert.match(release, /git fetch origin main:refs\/remotes\/origin\/main/);
+  assert.match(release, /git merge-base --is-ancestor HEAD origin\/main/);
+  assert.match(release, /^\s+run: pnpm run release:verify-tag$/m);
+  assert.match(release, /pnpm install --frozen-lockfile/);
+  assert.match(release, /pnpm run check:syntax/);
+  assert.match(release, /pnpm test/);
+  assert.match(release, /pnpm run readiness/);
+  assert.match(release, /pnpm audit --audit-level high/);
+  assert.match(release, /CSC_IDENTITY_AUTO_DISCOVERY:\s*['"]false['"]/);
+  assert.match(release, /pnpm run build:win/);
+  assert.match(release, /pnpm run release:prepare-assets/);
+  assert.match(release, /pnpm run release:verify-assets/);
+  assert.match(release, /actions\/upload-artifact@v4/);
+  assert.match(release, /actions\/download-artifact@v4/);
+  assert.match(release, /Desk-Pet-Prompt-Book-Setup-0\.1\.0-beta\.1\.exe/);
+  assert.match(release, /SHA256SUMS\.txt/);
+  assert.match(release, /needs: build-windows/);
+  assert.match(release, /contents: write/);
+  assert.match(release, /\$tag = \$env:GITHUB_REF_NAME/);
+  assert.doesNotMatch(release, /\$tag\s*=\s*['"]\$\{\{ github\.ref_name/);
+  assert.doesNotMatch(release, /release:verify-tag[^\n]*github\.ref_name/);
+  assert.match(release, /PSNativeCommandUseErrorActionPreference/);
+  assert.match(release, /\$createdReleaseId/);
+  assert.match(release, /gh api --method POST/);
+  assert.match(release, /gh release upload/);
+  assert.match(release, /gh api --method PATCH/);
+  assert.match(release, /\$publishAttempted = \$false/);
+  assert.match(release, /\$publishAttempted = \$true/);
+  assert.match(release, /-not \$publishAttempted/);
+  assert.match(release, /--jq ['"]\.draft['"]/);
+  assert.match(release, /gh api --method DELETE[^\n]*\$createdReleaseId/);
+  assert.doesNotMatch(release, /gh release delete/);
+  assert.match(release, /if \(\$LASTEXITCODE -ne 0\)/);
+  assert.match(release, /docs\/releases\/v0\.1\.0-beta\.1\.md/);
+
+  const releaseOrder = [
+    'git merge-base --is-ancestor HEAD origin/main',
+    'pnpm install --frozen-lockfile',
+    'pnpm run build:win',
+    'pnpm run release:prepare-assets',
+    'actions/upload-artifact@v4',
+    'actions/download-artifact@v4',
+    'gh api --method POST'
+  ].map((marker) => release.indexOf(marker));
+  assert.ok(releaseOrder.every((index) => index >= 0));
+  assert.deepEqual(releaseOrder, [...releaseOrder].sort((left, right) => left - right));
   assert.match(dependabot, /package-ecosystem:\s*["']npm["']/);
   assert.match(dependabot, /package-ecosystem:\s*["']github-actions["']/);
   assert.match(dependabot, /interval:\s*["']weekly["']/);
@@ -330,6 +407,7 @@ test('strict readiness requires GitHub automation files', () => {
   const expectedAutomationFiles = [
     '.github/workflows/ci.yml',
     '.github/workflows/codeql.yml',
+    '.github/workflows/release.yml',
     '.github/dependabot.yml',
     '.github/ISSUE_TEMPLATE/bug_report.yml',
     '.github/ISSUE_TEMPLATE/feature_request.yml',
@@ -340,6 +418,45 @@ test('strict readiness requires GitHub automation files', () => {
   expectedAutomationFiles.forEach((filePath) => {
     assert.ok(REQUIRED_PUBLIC_FILES.includes(filePath), `${filePath} must be required`);
   });
+
+  assert.ok(REQUIRED_PUBLIC_FILES.includes('build/icon.ico'), 'build/icon.ico must be required');
+  assert.ok(
+    REQUIRED_PUBLIC_FILES.includes('docs/releases/v0.1.0-beta.1.md'),
+    'Beta release notes must be required'
+  );
+});
+
+test('Windows beta release notes explain installation, risk, data, and license boundaries', async () => {
+  const releaseNotes = await readFile(
+    new URL('../docs/releases/v0.1.0-beta.1.md', import.meta.url),
+    'utf8'
+  );
+
+  assert.match(releaseNotes, /Beta/i);
+  assert.match(releaseNotes, /Desk-Pet-Prompt-Book-Setup-0\.1\.0-beta\.1\.exe/);
+  assert.match(releaseNotes, /unsigned|未签名/i);
+  assert.match(releaseNotes, /SmartScreen/i);
+  assert.match(releaseNotes, /更多信息\s*->\s*仍要运行/);
+  assert.match(releaseNotes, /desktop|桌面/i);
+  assert.match(releaseNotes, /Start menu|开始菜单/i);
+  assert.match(releaseNotes, /does not start automatically|不会自动开机启动/i);
+  assert.match(releaseNotes, /%APPDATA%\\desk-pet-prompt-book/);
+  assert.match(releaseNotes, /uninstall|卸载/i);
+  assert.match(releaseNotes, /retains|保留/i);
+  assert.match(releaseNotes, /MIT/i);
+  assert.match(releaseNotes, /noncommercial|非商业/i);
+  assert.match(releaseNotes, /known limitations|已知限制/i);
+  assert.match(releaseNotes, /github\.com\/QIUQIU-KONG\/desk-pet-prompt-book\/issues/);
+});
+
+test('cross-platform CI skips only the Windows icon regeneration command', async () => {
+  const packagingTests = await readFile(
+    new URL('../tests/windows-packaging.test.mjs', import.meta.url),
+    'utf8'
+  );
+
+  assert.match(packagingTests, /skip:\s*process\.platform !== 'win32'/);
+  assert.match(packagingTests, /readIcoSizes/);
 });
 
 test('Windows verification helper uses the pinned toolchain and local verification record', async () => {
