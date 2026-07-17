@@ -15,6 +15,7 @@ const REQUIRED_PUBLIC_FILES = [
   'CONTRIBUTING.md',
   'CODE_OF_CONDUCT.md',
   'CHANGELOG.md',
+  'build/icon.ico',
   '.github/workflows/ci.yml',
   '.github/workflows/codeql.yml',
   '.github/dependabot.yml',

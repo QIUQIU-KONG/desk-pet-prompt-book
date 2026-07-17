@@ -6,7 +6,7 @@ The source code and ordinary project documentation in this repository are licens
 
 For this license, the "project owner" is the owner of the canonical repository, GitHub user `QIUQIU-KONG`.
 
-The following eight visual files (the "Visual Assets") are **not licensed under the MIT License**:
+The following nine visual files (the "Visual Assets") are **not licensed under the MIT License**:
 
 | File | Role |
 | --- | --- |
@@ -18,6 +18,7 @@ The following eight visual files (the "Visual Assets") are **not licensed under 
 | `src/renderer/assets/page-mask-right.png` | Mask derived from the panel artwork |
 | `docs/images/desktop-pet-preview.png` | Runtime screenshot containing the desktop-pet artwork and effects |
 | `docs/images/app-preview.png` | Application screenshot containing the artwork |
+| `build/icon.ico` | Windows application and installer icon derived from the desktop-pet artwork |
 
 ## Permission for Noncommercial Use
 

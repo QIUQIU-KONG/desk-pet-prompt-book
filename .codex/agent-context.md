@@ -86,7 +86,7 @@
 ## 公开仓库发布基线（2026-07-16）
 
 - 运行时已迁移到 `src/renderer`，只保留 6 个运行时 PNG；`docs/images/app-preview.png` 已更新为真实 Electron `1024x700` 展开面板截图，使用隔离临时 `userData` 和匿名 Agent 开发演示数据生成。
-- 程序代码和普通项目文档使用 MIT；8 个分发视觉文件使用 `Desk Pet Prompt Book Noncommercial Visual Asset License, Version 1.0`，允许个人、教育、研究、评估与非商业贡献/Fork，禁止未经书面授权的商业使用、出售和商业再授权，不得宣称为 CC BY 4.0、CC0、MIT 或 OSI 开源资产。
+- 程序代码和普通项目文档使用 MIT；9 个分发视觉文件使用 `Desk Pet Prompt Book Noncommercial Visual Asset License, Version 1.0`，其中包含由桌宠魔法书画面派生的 Windows ICO；允许个人、教育、研究、评估与非商业贡献/Fork，禁止未经书面授权的商业使用、出售和商业再授权，不得宣称为 CC BY 4.0、CC0、MIT 或 OSI 开源资产。
 - 中英文 README 同时展示实际桌宠运行状态和展开后的书页工作台；产品理念定稿为 `Build agents with clarity. Let prompts become systems.`，中文为“明确地构建代理，让提示词成为系统。”。
 - `docs/images/desktop-pet-preview.png` 使用隔离真实 Electron `220×220` 窗口在 DPR 2 下捕获，以 `704×704` 放置于纯白 `1280×900` 文档画布 `(288, 98)`；该白底只属于 README 图片，不改变桌宠透明运行窗口。
 - 已提供中英文 README、隐私、安全、贡献、行为准则、变更记录、架构、数据与资产来源文档。

@@ -232,24 +232,26 @@ test('public documentation states project status, privacy, and license boundarie
   assert.match(readme, /^## 产品理念$/m);
   assert.match(readme, /Build agents with clarity\. Let prompts become systems\./);
   assert.match(readme, /明确地构建代理，让提示词成为系统。/);
-  assert.match(readme, /8 个分发视觉文件/);
+  assert.match(readme, /9 个分发视觉文件/);
   assert.match(readme, /MIT 代码与非商业视觉资产/);
   assert.match(englishReadme, /source-stage alpha/i);
   assert.match(englishReadme, /docs\/images\/desktop-pet-preview\.png[\s\S]*docs\/images\/app-preview\.png/);
   assert.match(englishReadme, /^## Product Philosophy$/m);
   assert.match(englishReadme, /Build agents with clarity\. Let prompts become systems\./);
-  assert.match(englishReadme, /Eight distributed visual files/);
+  assert.match(englishReadme, /Nine distributed visual files/);
   assert.match(englishReadme, /MIT-licensed code with noncommercial visual assets/i);
   assert.match(privacy, /clipboard/i);
   assert.match(privacy, /not encrypted/i);
   assert.match(security, /privately/i);
   assert.match(contributing, /asset provenance/i);
+  assert.match(contributing, /nine distributed visual files/i);
   assert.match(codeOfConduct, /Contributor Covenant Code of Conduct/);
   assert.match(codeOfConduct, /version 2\.1/i);
   assert.match(changelog, /0\.1\.0.*Unreleased/is);
   assert.match(architecture, /Electron main process/i);
   assert.match(dataAndPrivacy, /prompts\.json/);
   assert.match(assetProvenance, /Noncommercial Visual Asset License/i);
+  assert.match(assetProvenance, /nine distributed visual files/i);
   assert.doesNotMatch(
     [assetLicense, readme, englishReadme, contributing, changelog, assetProvenance].join('\n'),
     /license-pending/i
@@ -257,8 +259,10 @@ test('public documentation states project status, privacy, and license boundarie
   assert.match(assetProvenance, /docs\/images\/desktop-pet-preview\.png/);
   assert.match(assetLicense, /pet-safe-glow-v1\.png/);
   assert.match(assetLicense, /pet-safe-butterfly-v1\.png/);
+  assert.match(assetLicense, /build\/icon\.ico/);
   assert.match(assetProvenance, /pet-safe-glow-v1\.png/);
   assert.match(assetProvenance, /pet-safe-butterfly-v1\.png/);
+  assert.match(assetProvenance, /build\/icon\.ico/);
   assert.ok(existsSync(petScreenshotUrl));
   assert.ok(existsSync(appScreenshotUrl));
 
@@ -340,6 +344,8 @@ test('strict readiness requires GitHub automation files', () => {
   expectedAutomationFiles.forEach((filePath) => {
     assert.ok(REQUIRED_PUBLIC_FILES.includes(filePath), `${filePath} must be required`);
   });
+
+  assert.ok(REQUIRED_PUBLIC_FILES.includes('build/icon.ico'), 'build/icon.ico must be required');
 });
 
 test('Windows verification helper uses the pinned toolchain and local verification record', async () => {

@@ -111,7 +111,7 @@ Runtime code does not depend on internal `.codex` development material.
 - This is Windows-first source-stage software without an installer, automatic updates, or code signing.
 - Local data is unencrypted, with no accounts, cloud sync, team collaboration, or telemetry.
 - Desktop clipboard automation can depend on Windows session permissions and still requires real-session verification.
-- Eight distributed visual files use a separate noncommercial license and are not MIT or Creative Commons assets; commercial use requires written permission from the project owner.
+- Nine distributed visual files use a separate noncommercial license and are not MIT or Creative Commons assets; commercial use requires written permission from the project owner.
 
 ## Roadmap
 
@@ -124,4 +124,4 @@ Runtime code does not depend on internal `.codex` development material.
 
 This repository combines **MIT-licensed code with noncommercial visual assets**. Program code and ordinary project documentation are available under the [MIT License](LICENSE), including commercial use and closed-source derivatives when the copyright and license notice are retained.
 
-Eight distributed visual files are excluded from MIT. They may be used for personal learning, education, research, evaluation, and noncommercial contributions or forks, but commercial use, sale, and commercial relicensing require separate written permission. See [ASSET-LICENSE.md](ASSET-LICENSE.md) and [docs/asset-provenance.md](docs/asset-provenance.md).
+Nine distributed visual files are excluded from MIT. They may be used for personal learning, education, research, evaluation, and noncommercial contributions or forks, but commercial use, sale, and commercial relicensing require separate written permission. See [ASSET-LICENSE.md](ASSET-LICENSE.md) and [docs/asset-provenance.md](docs/asset-provenance.md).

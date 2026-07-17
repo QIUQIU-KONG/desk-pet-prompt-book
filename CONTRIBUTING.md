@@ -78,7 +78,7 @@ The current contract is explicit-gesture clipboard access, local-only prompt sto
 
 Every visual contribution requires an **asset provenance** record. Include the creator or provider, model/tool when generated, reference sources, governing terms, modification history, attribution, and permission for the intended repository distribution.
 
-Do not add an image merely because it can be downloaded or generated. Do not label artwork MIT, CC BY, CC0, or public domain without evidence that the contributor can grant those rights. Changes to the eight distributed visual files must update `ASSET-LICENSE.md` and `docs/asset-provenance.md`.
+Do not add an image merely because it can be downloaded or generated. Do not label artwork MIT, CC BY, CC0, or public domain without evidence that the contributor can grant those rights. Changes to the nine distributed visual files must update `ASSET-LICENSE.md` and `docs/asset-provenance.md`.
 
 ## Pull Request Checklist
 

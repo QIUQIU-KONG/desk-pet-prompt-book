@@ -176,6 +176,7 @@ Expected: packaging tests pass and the commit contains no generated `dist/` outp
 - Create: `build/icon.ico`
 - Modify: `tests/windows-packaging.test.mjs`
 - Modify: `tests/open-source-readiness.test.mjs`
+- Modify: `scripts/open-source-readiness.cjs`
 - Modify: `ASSET-LICENSE.md`
 - Modify: `docs/asset-provenance.md`
 - Modify: `README.md`
@@ -188,7 +189,7 @@ Expected: packaging tests pass and the commit contains no generated `dist/` outp
 - Consumes: `src/renderer/assets/pet-book-body-v5-alpha.png`.
 - Produces: `build/icon.ico` containing `16`, `32`, `48`, `64`, `128`, and `256` pixel PNG-compressed ICO entries.
 
-- [ ] **Step 1: Extend tests for ICO structure and nine-file licensing**
+- [x] **Step 1: Extend tests for ICO structure and nine-file licensing**
 
 Add an ICO parser that reads the six-byte ICONDIR header and sixteen-byte entries, normalizing width/height byte `0` to `256`. Require:
 
@@ -201,7 +202,7 @@ assert.deepEqual(readIcoSizes(icon), [16, 32, 48, 64, 128, 256]);
 
 Update readiness documentation assertions to require `build/icon.ico`, `nine visual files`, `Nine distributed visual files`, and `9 个分发视觉文件`.
 
-- [ ] **Step 2: Verify RED**
+- [x] **Step 2: Verify RED**
 
 Run:
 
@@ -211,21 +212,22 @@ corepack pnpm exec node --test tests/windows-packaging.test.mjs tests/open-sourc
 
 Expected: FAIL because the ICO and nine-file documentation do not exist.
 
-- [ ] **Step 3: Add a deterministic icon generator**
+- [x] **Step 3: Add a deterministic icon generator**
 
 Create `scripts/generate-windows-icon.ps1` using `System.Drawing.Bitmap`, `Graphics.DrawImage`, high-quality bicubic interpolation, and one in-memory PNG per approved size. Write a standard ICO header, one directory entry per PNG, and then the PNG payloads in the same order. Resolve source and destination relative to `$PSScriptRoot`; do not embed a personal absolute path.
 
-The script input/output contract is:
+PowerShell 5 evaluates parameter defaults before `$PSScriptRoot` is available, so the script accepts optional paths and resolves portable defaults in the body:
 
 ```powershell
 param(
-  [string]$SourcePath = (Join-Path $PSScriptRoot '..\src\renderer\assets\pet-book-body-v5-alpha.png'),
-  [string]$OutputPath = (Join-Path $PSScriptRoot '..\build\icon.ico')
+  [string]$SourcePath,
+  [string]$OutputPath
 )
+$root = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $sizes = @(16, 32, 48, 64, 128, 256)
 ```
 
-- [ ] **Step 4: Generate and inspect the icon**
+- [x] **Step 4: Generate and inspect the icon**
 
 Run:
 
@@ -235,11 +237,11 @@ powershell -ExecutionPolicy Bypass -File scripts/generate-windows-icon.ps1
 
 Expected: `build/icon.ico` exists, all six entries decode, and the source artwork direction is unchanged.
 
-- [ ] **Step 5: Update the visual-license boundary**
+- [x] **Step 5: Update the visual-license boundary**
 
 Add `build/icon.ico` to the asset table as `Windows application and installer icon derived from the desktop-pet artwork`. Replace current eight-file scope language with nine-file language in current public docs and `.codex/agent-context.md`; historical completed specs/plans remain historical records and are not rewritten.
 
-- [ ] **Step 6: Verify GREEN and commit**
+- [x] **Step 6: Verify GREEN and commit**
 
 Run:
 

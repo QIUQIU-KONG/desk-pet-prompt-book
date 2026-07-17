@@ -21,7 +21,7 @@ Source-stage alpha. This entry describes the current source tree and is not a pa
 - Bilingual product-philosophy copy and an anonymized `1024x700` Electron panel screenshot for the README files.
 - Automated tests for renderer contracts, Electron IPC/window behavior, and prompt-store behavior.
 - Repository readiness audit, public documentation, and separated code/artwork licensing boundaries.
-- Desk Pet Prompt Book Noncommercial Visual Asset License for the eight distributed visual files.
+- Desk Pet Prompt Book Noncommercial Visual Asset License for the nine distributed visual files, including the derived Windows icon.
 
 ### Changed
 
