@@ -138,7 +138,9 @@ test('Windows icon contains the approved multi-size transparent artwork entries'
   assert.deepEqual(readIcoSizes(icon), [16, 32, 48, 64, 128, 256]);
 });
 
-test('Windows icon generator resolves its default source path on Windows PowerShell', async () => {
+test('Windows icon generator resolves its default source path on Windows PowerShell', {
+  skip: process.platform !== 'win32'
+}, async () => {
   const tempDirectory = await mkdtemp(path.join(tmpdir(), 'desk-pet-icon-'));
   const outputPath = path.join(tempDirectory, 'icon.ico');
 

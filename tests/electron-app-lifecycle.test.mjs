@@ -8,6 +8,7 @@ const {
   USER_DATA_DIRECTORY,
   attachExitContextMenu,
   configureStableUserDataPath,
+  createQuitCoordinator,
   focusPrimaryWindow,
   setupSingleInstance
 } = require('../src/electron/app-lifecycle.cjs');
@@ -87,7 +88,7 @@ test('attachExitContextMenu opens one native command and exits only after select
   let contextMenuHandler;
   let menuTemplate;
   let popupOptions;
-  let quitCalls = 0;
+  let exitCalls = 0;
   const fakeWindow = {
     webContents: {
       on(eventName, handler) {
@@ -106,20 +107,80 @@ test('attachExitContextMenu opens one native command and exits only after select
       };
     }
   };
-  const fakeApp = {
-    quit() {
-      quitCalls += 1;
-    }
+  const requestExit = () => {
+    exitCalls += 1;
   };
 
-  attachExitContextMenu(fakeWindow, fakeMenu, fakeApp);
+  attachExitContextMenu(fakeWindow, fakeMenu, requestExit);
   contextMenuHandler({}, {});
 
-  assert.equal(quitCalls, 0);
+  assert.equal(exitCalls, 0);
   assert.equal(menuTemplate.length, 1);
   assert.equal(menuTemplate[0].label, '退出桌宠');
   assert.deepEqual(popupOptions, { window: fakeWindow });
 
   menuTemplate[0].click();
+  assert.equal(exitCalls, 1);
+});
+
+test('quit coordinator drains pending writes once before quitting', async () => {
+  let releaseWrite;
+  let quitCalls = 0;
+  let pendingRequests = 0;
+  const pendingWrite = new Promise((resolve) => {
+    releaseWrite = resolve;
+  });
+  const requestQuit = createQuitCoordinator({
+    app: { quit: () => { quitCalls += 1; } },
+    getPendingWrites: () => {
+      pendingRequests += 1;
+      return pendingWrite;
+    },
+    onError: (error) => assert.fail(error),
+    timeoutMs: 1000
+  });
+
+  const firstQuit = requestQuit();
+  const secondQuit = requestQuit();
+  await Promise.resolve();
+
+  assert.equal(firstQuit, secondQuit);
+  assert.equal(pendingRequests, 1);
+  assert.equal(quitCalls, 0);
+
+  releaseWrite();
+  await firstQuit;
+  assert.equal(quitCalls, 1);
+});
+
+test('quit coordinator logs write failures and still quits', async () => {
+  const errors = [];
+  let quitCalls = 0;
+  const requestQuit = createQuitCoordinator({
+    app: { quit: () => { quitCalls += 1; } },
+    getPendingWrites: () => Promise.reject(new Error('write failed')),
+    onError: (error) => errors.push(error.message),
+    timeoutMs: 1000
+  });
+
+  await requestQuit();
+
+  assert.deepEqual(errors, ['write failed']);
+  assert.equal(quitCalls, 1);
+});
+
+test('quit coordinator bounds a stalled write before quitting', async () => {
+  const errors = [];
+  let quitCalls = 0;
+  const requestQuit = createQuitCoordinator({
+    app: { quit: () => { quitCalls += 1; } },
+    getPendingWrites: () => new Promise(() => {}),
+    onError: (error) => errors.push(error.message),
+    timeoutMs: 5
+  });
+
+  await requestQuit();
+
+  assert.match(errors[0], /5ms/);
   assert.equal(quitCalls, 1);
 });

@@ -32,12 +32,44 @@ function focusPrimaryWindow(window) {
   return true;
 }
 
-function attachExitContextMenu(window, Menu, app) {
+function createQuitCoordinator({ app, getPendingWrites, onError, timeoutMs = 5000 }) {
+  let quitRequest = null;
+
+  return function requestQuit() {
+    if (quitRequest) {
+      return quitRequest;
+    }
+
+    quitRequest = (async () => {
+      let timeout;
+
+      try {
+        await Promise.race([
+          Promise.resolve().then(() => getPendingWrites()),
+          new Promise((_, reject) => {
+            timeout = setTimeout(() => {
+              reject(new Error(`Timed out waiting for pending writes after ${timeoutMs}ms`));
+            }, timeoutMs);
+          })
+        ]);
+      } catch (error) {
+        onError(error);
+      } finally {
+        clearTimeout(timeout);
+        app.quit();
+      }
+    })();
+
+    return quitRequest;
+  };
+}
+
+function attachExitContextMenu(window, Menu, requestExit) {
   window.webContents.on('context-menu', () => {
     const menu = Menu.buildFromTemplate([
       {
         label: '退出桌宠',
-        click: () => app.quit()
+        click: () => requestExit()
       }
     ]);
 
@@ -49,6 +81,7 @@ module.exports = {
   USER_DATA_DIRECTORY,
   attachExitContextMenu,
   configureStableUserDataPath,
+  createQuitCoordinator,
   focusPrimaryWindow,
   setupSingleInstance
 };

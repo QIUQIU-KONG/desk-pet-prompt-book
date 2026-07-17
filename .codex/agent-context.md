@@ -112,9 +112,14 @@
 
 ## Windows Beta 本机验收（2026-07-17）
 
-- 完整质量门在依赖修补后通过：冻结安装、语法检查、115 项测试、严格 readiness、依赖审计和 Git 空白检查均成功，总耗时约 10 秒。
-- 本机生成未签名安装包 `Desk-Pet-Prompt-Book-Setup-0.1.0-beta.1.exe`，大小 `103623013` 字节，SHA-256 为 `b13af8a661f6216cd30b74a68d0e8e1cc72c794f01cded66073275a7585bd69b`。
+- 审查加固后的最终质量门通过：语法检查、123 项测试、严格 readiness、依赖审计和 Git 空白检查均成功；依赖未变化，因此使用 `-SkipInstall`，总耗时约 `14s`。
+- 最终未签名安装包为 `Desk-Pet-Prompt-Book-Setup-0.1.0-beta.1.exe`，大小 `103623334` 字节，SHA-256 为 `dd69f8403f85364625b3a8657852f8d7ecc01dca6db185ecbaf58ae085e4fd41`；`release:prepare-assets` 与 `release:verify-assets` 均通过。
 - 安装器作为当前用户写入 HKCU，默认安装到 `%LOCALAPPDATA%\Programs\DeskPetPromptBook`；桌面和开始菜单快捷方式均指向 `DeskPetPromptBook.exe`，Run 与 Startup 中没有应用启动项。
 - 安装版第一次启动保持运行，第二次启动以 0 码退出，系统中只保留 1 个安装版主进程。
 - Windows UI Automation 实测桌宠窗口为 `220×220`、展开面板为 `1024×700`；两种状态右键都能发现原生 `ControlType.MenuItem`“退出桌宠”，调用后进程以 0 码退出。
 - 卸载后安装目录、两个快捷方式和卸载项均消失，`%APPDATA%\desk-pet-prompt-book` 中的验收标记保留，既有提示词数据文件前后哈希差异为 0；随后已删除验收标记并重新安装同一构建。
+- 审查加固将标签工作流拆分为只读 Windows 构建任务和仅下载已验证产物的写权限发布任务；`origin/main` 祖先校验先于依赖安装，标签从 `GITHUB_REF_NAME` 环境变量读取。发布前失败只在确认本次 Release 仍为草稿时删除；PATCH 结果不确定时保留 Release，避免误删已经发布的版本。
+- 发布测试会抽取并执行 workflow 中的真实 PowerShell，通过假的 `gh` 覆盖恶意标签、既有 Release、资产不符、PATCH 响应不确定和成功发布；独立复审已确认无剩余 Critical/Important finding。
+- 提示词存储新增 `whenIdle()` 写队列边界，并保留首个写入失败供退出路径记录；桌宠右键退出和 `window-all-closed` 共用幂等退出协调器，最多等待 5 秒，失败会写入 `quit wait failed` 日志后继续单次退出。
+- 安装版真实前台验收通过：先最小化桌宠并将 Explorer 窗口置为前台，第二次启动以 0 码退出，已有桌宠恢复且其 HWND 成为前台，安装版根进程数保持 1；此后单实例与聚焦代码未再改动。
+- 最终哈希安装版退出验收通过：UI Automation 发现并调用“退出桌宠”，主进程退出码为 0、残留安装版进程为 0、提示词数据 SHA-256 前后均为 `55456A7E0427D9800B8E6537D811AF6541C25A0D83C0009B6C1F46AD5EE5B87B`，新增 `quit wait failed` 日志为 0。

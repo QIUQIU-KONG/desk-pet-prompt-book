@@ -43,7 +43,16 @@ test('electron attaches a native right-click exit menu to the pet and panel wind
   const main = await readFile(mainPath, 'utf8');
   const createWindow = main.match(/function createPetWindow\(\)[\s\S]*?\n\}/)?.[0] ?? '';
 
-  assert.match(createWindow, /attachExitContextMenu\(petWindow, Menu, app\)/);
+  assert.match(createWindow, /attachExitContextMenu\(petWindow, Menu, requestApplicationQuit\)/);
+});
+
+test('electron drains queued prompt writes before normal application exit', async () => {
+  const main = await readFile(mainPath, 'utf8');
+
+  assert.match(main, /createQuitCoordinator/);
+  assert.match(main, /promptStore\?\.whenIdle\(\)/);
+  assert.match(main, /quit wait failed/);
+  assert.match(main, /void requestApplicationQuit\(\)/);
 });
 
 test('electron main creates a transparent always-on-top frameless pet window', async () => {

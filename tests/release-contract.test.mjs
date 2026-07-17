@@ -21,6 +21,10 @@ test('release tags require a leading v and expose the package version', () => {
   assert.equal(parseReleaseTag('v0.1.0-beta.1'), '0.1.0-beta.1');
   assert.throws(() => parseReleaseTag('0.1.0-beta.1'), /leading v/i);
   assert.throws(() => parseReleaseTag('vbeta'), /semantic version/i);
+  assert.throws(
+    () => parseReleaseTag("v0.1.0-beta.1'; Write-Host injected; #"),
+    /semantic version/i
+  );
 });
 
 test('beta release identity requires matching prerelease package and protected-main ancestry', () => {
@@ -41,6 +45,11 @@ test('beta release identity requires matching prerelease package and protected-m
   assert.throws(() => assertBetaReleaseIdentity({
     tag: 'v0.1.0',
     packageVersion: '0.1.0',
+    isOnMain: true
+  }), /prerelease/i);
+  assert.throws(() => assertBetaReleaseIdentity({
+    tag: 'v0.1.0+build-beta',
+    packageVersion: '0.1.0+build-beta',
     isOnMain: true
   }), /prerelease/i);
   assert.throws(() => assertBetaReleaseIdentity({

@@ -230,13 +230,27 @@ function createPromptStore(options) {
   const idGenerator = options.idGenerator ?? (() => randomUUID());
   const onRecovery = typeof options.onRecovery === 'function' ? options.onRecovery : null;
   let mutationQueue = Promise.resolve();
+  let mutationFailure = null;
 
   function queued(operation) {
     return (...args) => {
       const result = mutationQueue.then(() => operation(...args));
-      mutationQueue = result.then(() => undefined, () => undefined);
+      mutationQueue = result.then(
+        () => undefined,
+        (reason) => {
+          mutationFailure ??= { reason };
+        }
+      );
       return result;
     };
+  }
+
+  function whenIdle() {
+    return mutationQueue.then(() => {
+      if (mutationFailure) {
+        throw mutationFailure.reason;
+      }
+    });
   }
 
   function reportRecovery(event) {
@@ -922,6 +936,7 @@ function createPromptStore(options) {
   return {
     filePath,
     load,
+    whenIdle,
     save: queued(save),
     captureText: queued(captureText),
     createProject: queued(createProject),

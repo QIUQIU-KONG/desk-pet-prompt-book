@@ -34,7 +34,8 @@ function assertBetaReleaseIdentity({ tag, packageVersion, isOnMain }) {
   if (version !== packageVersion) {
     throw new Error(`Tag version ${version} does not match package version ${packageVersion}.`);
   }
-  if (!version.includes('-')) {
+  const versionWithoutBuildMetadata = version.split('+', 1)[0];
+  if (!versionWithoutBuildMetadata.includes('-')) {
     throw new Error(`Beta workflow requires a prerelease version: ${version}.`);
   }
   if (!isOnMain) {

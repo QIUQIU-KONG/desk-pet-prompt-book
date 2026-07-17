@@ -5,6 +5,7 @@ const { createPromptStore } = require('../core/prompt-store.cjs');
 const {
   attachExitContextMenu,
   configureStableUserDataPath,
+  createQuitCoordinator,
   focusPrimaryWindow,
   setupSingleInstance
 } = require('./app-lifecycle.cjs');
@@ -70,6 +71,14 @@ function getPromptStore() {
 
   return promptStore;
 }
+
+const requestApplicationQuit = createQuitCoordinator({
+  app,
+  getPendingWrites: () => promptStore?.whenIdle(),
+  onError: (error) => {
+    appendStartupLog(`quit wait failed: ${error.stack || error.message}`);
+  }
+});
 
 ipcMain.handle('prompts:captureClipboard', async () => {
   const text = clipboard.readText();
@@ -375,7 +384,7 @@ function createPetWindow() {
   });
 
   primaryWindow = petWindow;
-  attachExitContextMenu(petWindow, Menu, app);
+  attachExitContextMenu(petWindow, Menu, requestApplicationQuit);
   setWindowMode(petWindow, WINDOW_MODES.PET);
   lockPetWindowSize(petWindow);
   positionPetWindow(petWindow);
@@ -435,7 +444,7 @@ if (isPrimaryInstance) {
 
   app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') {
-      app.quit();
+      void requestApplicationQuit();
     }
   });
 }

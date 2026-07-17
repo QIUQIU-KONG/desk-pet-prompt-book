@@ -341,14 +341,16 @@ test('repository automation enforces verification and structured contributions',
   assert.match(codeql, /github\/codeql-action\/init@v3/);
   assert.match(codeql, /github\/codeql-action\/analyze@v3/);
   assert.match(release, /tags:\s*\n\s+- ['"]v\*['"]/);
-  assert.match(release, /permissions:\s*\n\s+contents: write/);
+  assert.match(release, /^permissions:\s*\n\s+contents: read$/m);
   assert.match(release, /windows-latest/);
   assert.match(release, /fetch-depth: 0/);
+  assert.match(release, /persist-credentials: false/);
   assert.match(release, /version: 11\.13\.0/);
   assert.match(release, /node-version: 24/);
-  assert.match(release, /pnpm install --frozen-lockfile/);
   assert.match(release, /git fetch origin main:refs\/remotes\/origin\/main/);
-  assert.match(release, /pnpm run release:verify-tag/);
+  assert.match(release, /git merge-base --is-ancestor HEAD origin\/main/);
+  assert.match(release, /^\s+run: pnpm run release:verify-tag$/m);
+  assert.match(release, /pnpm install --frozen-lockfile/);
   assert.match(release, /pnpm run check:syntax/);
   assert.match(release, /pnpm test/);
   assert.match(release, /pnpm run readiness/);
@@ -358,19 +360,36 @@ test('repository automation enforces verification and structured contributions',
   assert.match(release, /pnpm run release:prepare-assets/);
   assert.match(release, /pnpm run release:verify-assets/);
   assert.match(release, /actions\/upload-artifact@v4/);
+  assert.match(release, /actions\/download-artifact@v4/);
   assert.match(release, /Desk-Pet-Prompt-Book-Setup-0\.1\.0-beta\.1\.exe/);
   assert.match(release, /SHA256SUMS\.txt/);
-  assert.match(release, /gh release create/);
-  assert.match(release, /--verify-tag/);
-  assert.match(release, /--prerelease/);
+  assert.match(release, /needs: build-windows/);
+  assert.match(release, /contents: write/);
+  assert.match(release, /\$tag = \$env:GITHUB_REF_NAME/);
+  assert.doesNotMatch(release, /\$tag\s*=\s*['"]\$\{\{ github\.ref_name/);
+  assert.doesNotMatch(release, /release:verify-tag[^\n]*github\.ref_name/);
+  assert.match(release, /PSNativeCommandUseErrorActionPreference/);
+  assert.match(release, /\$createdReleaseId/);
+  assert.match(release, /gh api --method POST/);
+  assert.match(release, /gh release upload/);
+  assert.match(release, /gh api --method PATCH/);
+  assert.match(release, /\$publishAttempted = \$false/);
+  assert.match(release, /\$publishAttempted = \$true/);
+  assert.match(release, /-not \$publishAttempted/);
+  assert.match(release, /--jq ['"]\.draft['"]/);
+  assert.match(release, /gh api --method DELETE[^\n]*\$createdReleaseId/);
+  assert.doesNotMatch(release, /gh release delete/);
+  assert.match(release, /if \(\$LASTEXITCODE -ne 0\)/);
   assert.match(release, /docs\/releases\/v0\.1\.0-beta\.1\.md/);
 
   const releaseOrder = [
-    'pnpm run release:verify-tag',
+    'git merge-base --is-ancestor HEAD origin/main',
+    'pnpm install --frozen-lockfile',
     'pnpm run build:win',
     'pnpm run release:prepare-assets',
     'actions/upload-artifact@v4',
-    'gh release create'
+    'actions/download-artifact@v4',
+    'gh api --method POST'
   ].map((marker) => release.indexOf(marker));
   assert.ok(releaseOrder.every((index) => index >= 0));
   assert.deepEqual(releaseOrder, [...releaseOrder].sort((left, right) => left - right));
@@ -428,6 +447,16 @@ test('Windows beta release notes explain installation, risk, data, and license b
   assert.match(releaseNotes, /noncommercial|非商业/i);
   assert.match(releaseNotes, /known limitations|已知限制/i);
   assert.match(releaseNotes, /github\.com\/QIUQIU-KONG\/desk-pet-prompt-book\/issues/);
+});
+
+test('cross-platform CI skips only the Windows icon regeneration command', async () => {
+  const packagingTests = await readFile(
+    new URL('../tests/windows-packaging.test.mjs', import.meta.url),
+    'utf8'
+  );
+
+  assert.match(packagingTests, /skip:\s*process\.platform !== 'win32'/);
+  assert.match(packagingTests, /readIcoSizes/);
 });
 
 test('Windows verification helper uses the pinned toolchain and local verification record', async () => {
