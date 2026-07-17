@@ -601,7 +601,7 @@ Expected: exactly one top-level setup `.exe` plus `SHA256SUMS.txt`; no portable 
 
 Use PowerShell `Get-Item ... | Select-Object -ExpandProperty VersionInfo` and `Get-FileHash -Algorithm SHA256`. Require product/file version `0.1.0-beta.1` or Windows' numeric equivalent, product name `桌宠提示词魔法书`, executable metadata for `DeskPetPromptBook`, no signer, and an exact manifest match.
 
-- [ ] **Step 4: Commit the implementation branch and push**
+- [x] **Step 4: Commit the implementation branch and push**
 
 Review `git status`, ensure `dist/` and machine-local evidence are ignored, update plan checkboxes through this point, commit the plan evidence, then run:
 
