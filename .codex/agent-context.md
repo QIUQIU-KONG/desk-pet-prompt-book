@@ -100,7 +100,7 @@
 
 ## Windows Beta 发布实现（2026-07-17）
 
-- Beta 版本固定为 `0.1.0-beta.1`，目标标签为 `v0.1.0-beta.1`；当前仍在功能分支验收阶段，尚未创建公开 Release。
+- Beta 版本固定为 `0.1.0-beta.1`，标签为 `v0.1.0-beta.1`；已于 2026-07-17 发布为公开 GitHub Pre-release。
 - Windows 产品名为“桌宠提示词魔法书”，稳定应用 ID 为 `com.qiuqiukong.deskpetpromptbook`，主程序名为 `DeskPetPromptBook.exe`。
 - 使用 `electron-builder@26.15.3` 与 assisted per-user NSIS x64；只生成安装版，不生成便携版，不添加开机启动、自动更新或代码签名。
 - 安装包固定命名为 `Desk-Pet-Prompt-Book-Setup-0.1.0-beta.1.exe`，发布时必须同时提供 `SHA256SUMS.txt`。
@@ -113,7 +113,7 @@
 ## Windows Beta 本机验收（2026-07-17）
 
 - 审查加固后的最终质量门通过：语法检查、123 项测试、严格 readiness、依赖审计和 Git 空白检查均成功；依赖未变化，因此使用 `-SkipInstall`，总耗时约 `14s`。
-- 最终未签名安装包为 `Desk-Pet-Prompt-Book-Setup-0.1.0-beta.1.exe`，大小 `103623334` 字节，SHA-256 为 `dd69f8403f85364625b3a8657852f8d7ecc01dca6db185ecbaf58ae085e4fd41`；`release:prepare-assets` 与 `release:verify-assets` 均通过。
+- 本机验收使用的未签名安装包为 `Desk-Pet-Prompt-Book-Setup-0.1.0-beta.1.exe`，大小 `103623334` 字节，SHA-256 为 `dd69f8403f85364625b3a8657852f8d7ecc01dca6db185ecbaf58ae085e4fd41`；`release:prepare-assets` 与 `release:verify-assets` 均通过。CI 重新构建会因打包时间戳产生不同哈希，用户下载时以 Release 内的 `SHA256SUMS.txt` 为准。
 - 安装器作为当前用户写入 HKCU，默认安装到 `%LOCALAPPDATA%\Programs\DeskPetPromptBook`；桌面和开始菜单快捷方式均指向 `DeskPetPromptBook.exe`，Run 与 Startup 中没有应用启动项。
 - 安装版第一次启动保持运行，第二次启动以 0 码退出，系统中只保留 1 个安装版主进程。
 - Windows UI Automation 实测桌宠窗口为 `220×220`、展开面板为 `1024×700`；两种状态右键都能发现原生 `ControlType.MenuItem`“退出桌宠”，调用后进程以 0 码退出。
@@ -123,3 +123,12 @@
 - 提示词存储新增 `whenIdle()` 写队列边界，并保留首个写入失败供退出路径记录；桌宠右键退出和 `window-all-closed` 共用幂等退出协调器，最多等待 5 秒，失败会写入 `quit wait failed` 日志后继续单次退出。
 - 安装版真实前台验收通过：先最小化桌宠并将 Explorer 窗口置为前台，第二次启动以 0 码退出，已有桌宠恢复且其 HWND 成为前台，安装版根进程数保持 1；此后单实例与聚焦代码未再改动。
 - 最终哈希安装版退出验收通过：UI Automation 发现并调用“退出桌宠”，主进程退出码为 0、残留安装版进程为 0、提示词数据 SHA-256 前后均为 `55456A7E0427D9800B8E6537D811AF6541C25A0D83C0009B6C1F46AD5EE5B87B`，新增 `quit wait failed` 日志为 0。
+
+## Windows Beta GitHub 发布（2026-07-17）
+
+- [Pull Request #1](https://github.com/QIUQIU-KONG/desk-pet-prompt-book/pull/1) 的 Windows、Ubuntu、Dependency audit 和 CodeQL 全部通过，并 squash merge 到 `main` 提交 `b7683ed84d00ffe815b4b9928b857123998b5787`。
+- 合并后的 `main` 再次通过 123 项本地测试、严格 readiness、依赖审计、发布身份验证以及主分支 CI/CodeQL；标签 `v0.1.0-beta.1` 指向该提交。
+- [Windows Beta Release 工作流](https://github.com/QIUQIU-KONG/desk-pet-prompt-book/actions/runs/29558072013) 成功完成只读构建任务和独立写权限发布任务；Release 为 `isDraft=false`、`isPrerelease=true`。
+- [GitHub Pre-release](https://github.com/QIUQIU-KONG/desk-pet-prompt-book/releases/tag/v0.1.0-beta.1) 恰好包含 `Desk-Pet-Prompt-Book-Setup-0.1.0-beta.1.exe` 与 `SHA256SUMS.txt`。
+- 从 GitHub 重新下载两个资产后独立校验通过：发布安装包大小 `103623401` 字节，SHA-256、`SHA256SUMS.txt` 和 GitHub asset digest 均为 `969735d2ba30ac27611574cc8277e8516ef940b8b52ca90a7d8057e559a57bfb`。
+- 工作流存在 GitHub Actions v4 运行时的 Node.js 20 弃用提示，但所有任务成功；后续维护应在对应 action 新主版本稳定后升级，当前 Beta 资产不受影响。

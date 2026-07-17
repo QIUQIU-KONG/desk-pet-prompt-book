@@ -255,7 +255,7 @@
 
 ## 阶段 9：Windows Beta 安装与发布
 
-状态：本机安装、二次启动前台聚焦、原生退出、卸载数据保留和审查加固后的最终质量门均已通过；等待功能分支提交、受保护主分支合并、标签和 GitHub Pre-release 验证。
+状态：已完成（2026-07-17）。`v0.1.0-beta.1` 已通过受保护主分支检查并发布为 GitHub Pre-release。
 
 ### 目标
 
@@ -279,3 +279,11 @@
 - [x] Ubuntu CI 跳过 Windows PowerShell 图标生成命令，但继续验证已提交 ICO 的尺寸结构。
 - [x] 应用退出前等待提示词存储写队列；写入失败或等待超过 5 秒时记录错误并继续完成单次退出。
 - [x] 真实 Explorer 窗口处于前台且桌宠已最小化时，第二次启动会恢复已有桌宠并将其置为前台，同时仅保留一个安装版根进程。
+
+### 发布结果
+
+- [x] [Pull Request #1](https://github.com/QIUQIU-KONG/desk-pet-prompt-book/pull/1) 的 Windows、Ubuntu、依赖审计和 CodeQL 检查全部通过，并以 squash 方式合并到 `main` 提交 `b7683ed84d00ffe815b4b9928b857123998b5787`。
+- [x] 合并后的 `main` 再次通过本地 123 项测试、readiness、依赖审计、发布身份检查以及主分支 CI/CodeQL。
+- [x] 标签 `v0.1.0-beta.1` 指向上述 `main` 提交；[Windows Beta Release](https://github.com/QIUQIU-KONG/desk-pet-prompt-book/actions/runs/29558072013) 构建与发布任务全部成功。
+- [x] [GitHub Pre-release](https://github.com/QIUQIU-KONG/desk-pet-prompt-book/releases/tag/v0.1.0-beta.1) 为非草稿状态，包含且仅包含安装包与 `SHA256SUMS.txt`。
+- [x] 重新下载发布资产后独立验证通过：安装包大小 `103623401` 字节，SHA-256 为 `969735d2ba30ac27611574cc8277e8516ef940b8b52ca90a7d8057e559a57bfb`。
