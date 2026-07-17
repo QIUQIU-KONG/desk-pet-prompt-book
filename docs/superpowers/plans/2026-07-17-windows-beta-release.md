@@ -363,7 +363,7 @@ Expected: unit and shell contracts pass without launching a second real app inst
 - Produces: `parseReleaseTag(tag)`, `assertBetaReleaseIdentity(options)`, `expectedInstallerName(version)`, `assertExpectedInstaller(distDir, version)`, `writeChecksum(installerPath, checksumPath)`, `verifyChecksum(installerPath, checksumPath)`, and CLI commands `verify-tag`, `prepare-assets`, `verify-assets`.
 - Consumes: `package.json`, `origin/main`, `dist/Desk-Pet-Prompt-Book-Setup-0.1.0-beta.1.exe`, and `dist/SHA256SUMS.txt`.
 
-- [ ] **Step 1: Write failing release-contract tests**
+- [x] **Step 1: Write failing release-contract tests**
 
 Cover all required rejection paths:
 
@@ -377,7 +377,7 @@ assert.equal(expectedInstallerName('0.1.0-beta.1'), 'Desk-Pet-Prompt-Book-Setup-
 
 In a temporary directory, require a missing installer, an additional setup `.exe`, and a tampered checksum to fail. Require a valid installer to produce `SHA256SUMS.txt` in standard `hash  filename` form and then verify successfully.
 
-- [ ] **Step 2: Verify RED**
+- [x] **Step 2: Verify RED**
 
 Run:
 
@@ -387,7 +387,7 @@ corepack pnpm exec node --test tests/release-contract.test.mjs
 
 Expected: FAIL because the release contract module is absent.
 
-- [ ] **Step 3: Implement the dependency-free release command**
+- [x] **Step 3: Implement the dependency-free release command**
 
 Use `node:crypto`, `node:fs`, `node:path`, and `node:child_process`. `verify-tag` reads the package version and runs:
 
@@ -397,7 +397,7 @@ git merge-base --is-ancestor HEAD origin/main
 
 Exit `0` means contained, exit `1` means reject, and any other exit is a Git error. `assertExpectedInstaller` scans only top-level setup `.exe` files and requires the exact approved file to be the only candidate. `prepare-assets` writes then re-verifies `dist/SHA256SUMS.txt`; `verify-assets` performs no mutation.
 
-- [ ] **Step 4: Add exact package scripts and syntax coverage**
+- [x] **Step 4: Add exact package scripts and syntax coverage**
 
 Add:
 
@@ -409,7 +409,7 @@ Add:
 
 Add `node --check scripts/release-contract.cjs` to `check:syntax`.
 
-- [ ] **Step 5: Verify GREEN and commit**
+- [x] **Step 5: Verify GREEN and commit**
 
 Run:
 
