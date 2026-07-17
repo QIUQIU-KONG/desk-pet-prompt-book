@@ -574,7 +574,7 @@ Expected: public docs consistently describe the unsigned Beta and do not promise
 - Consumes: all implementation tasks and installed Windows tooling.
 - Produces: a locally verified unsigned NSIS installer and checksum; no GitHub tag or Release yet.
 
-- [ ] **Step 1: Run the complete local quality gate once**
+- [x] **Step 1: Run the complete local quality gate once**
 
 Run:
 
@@ -584,7 +584,7 @@ powershell -ExecutionPolicy Bypass -File scripts/verify-and-push.ps1
 
 Expected: frozen install, syntax, all tests, strict readiness, high-severity audit, and Git whitespace checks pass.
 
-- [ ] **Step 2: Build without code-signing discovery**
+- [x] **Step 2: Build without code-signing discovery**
 
 Run:
 
@@ -597,7 +597,7 @@ corepack pnpm run release:verify-assets
 
 Expected: exactly one top-level setup `.exe` plus `SHA256SUMS.txt`; no portable artifact or partial GitHub Release exists.
 
-- [ ] **Step 3: Inspect executable metadata and checksum**
+- [x] **Step 3: Inspect executable metadata and checksum**
 
 Use PowerShell `Get-Item ... | Select-Object -ExpandProperty VersionInfo` and `Get-FileHash -Algorithm SHA256`. Require product/file version `0.1.0-beta.1` or Windows' numeric equivalent, product name `桌宠提示词魔法书`, executable metadata for `DeskPetPromptBook`, no signer, and an exact manifest match.
 
@@ -623,27 +623,27 @@ Expected: the branch is clean and `origin/release/windows-beta-installer` matche
 - Consumes: the exact locally built installer from Task 7.
 - Produces: evidence that the packaged behavior works in an interactive Windows user session and prompt data survives uninstall.
 
-- [ ] **Step 1: Protect existing local prompt data**
+- [x] **Step 1: Protect existing local prompt data**
 
 Record whether `%APPDATA%\desk-pet-prompt-book` exists and its current file hashes. Create only a uniquely named non-prompt acceptance marker inside that directory; do not replace, reset, or delete `data/prompts.json` or its backups.
 
-- [ ] **Step 2: Run the assisted installer as the current user**
+- [x] **Step 2: Run the assisted installer as the current user**
 
 Install to the default per-user location without elevation. Confirm the wizard offers an install-directory choice and launch-after-finish option.
 
-- [ ] **Step 3: Verify installed application behavior**
+- [x] **Step 3: Verify installed application behavior**
 
 Confirm desktop and Start menu shortcuts exist and launch the same `DeskPetPromptBook.exe`. Confirm no Startup-folder shortcut or `HKCU\Software\Microsoft\Windows\CurrentVersion\Run` entry was added. Launch twice and verify the second launch focuses the existing pet/panel rather than creating another owning instance.
 
-- [ ] **Step 4: Verify the native exit path and data continuity**
+- [x] **Step 4: Verify the native exit path and data continuity**
 
 Right-click the pet and the expanded panel: each must show one native `退出桌宠` item, and the process exits only after selecting it. Relaunch and confirm existing prompts remain available from `%APPDATA%\desk-pet-prompt-book`.
 
-- [ ] **Step 5: Verify uninstall retention**
+- [x] **Step 5: Verify uninstall retention**
 
 Uninstall through Windows. Confirm application files and shortcuts are removed, while the acceptance marker and pre-existing prompt-data hashes remain. Remove only the marker created in Step 1. Reinstall the accepted build so the user retains a convenient installed application after testing.
 
-- [ ] **Step 6: Record acceptance and re-run focused checks**
+- [x] **Step 6: Record acceptance and re-run focused checks**
 
 Record the date, artifact SHA-256, install path, shortcut/no-startup result, single-instance result, exit-menu result, and data-retention result in `.codex/agent-context.md`. Run release artifact verification again, commit the evidence, and push the branch.
 

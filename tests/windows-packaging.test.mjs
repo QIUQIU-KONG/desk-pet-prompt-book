@@ -1,18 +1,23 @@
 import assert from 'node:assert/strict';
 import { existsSync } from 'node:fs';
 import { mkdtemp, readFile, rm } from 'node:fs/promises';
+import { createRequire } from 'node:module';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import test from 'node:test';
 import { fileURLToPath } from 'node:url';
 
+const require = createRequire(import.meta.url);
+
 const packagePath = new URL('../package.json', import.meta.url);
+const lockfilePath = new URL('../pnpm-lock.yaml', import.meta.url);
 const builderConfigPath = new URL('../electron-builder.yml', import.meta.url);
 const iconPath = new URL('../build/icon.ico', import.meta.url);
 const iconScriptPath = fileURLToPath(new URL('../scripts/generate-windows-icon.ps1', import.meta.url));
 const workspacePath = new URL('../pnpm-workspace.yaml', import.meta.url);
 const packageJson = JSON.parse(await readFile(packagePath, 'utf8'));
+const lockfile = await readFile(lockfilePath, 'utf8');
 const builderConfig = existsSync(builderConfigPath)
   ? await readFile(builderConfigPath, 'utf8')
   : '';
@@ -72,6 +77,31 @@ test('pnpm explicitly rejects the unused Squirrel installer build script', () =>
   assert.match(workspaceConfig, /^\s+electron: true$/m);
   assert.match(workspaceConfig, /^\s+electron-winstaller: false$/m);
   assert.doesNotMatch(workspaceConfig, /set this to true or false/);
+});
+
+test('pnpm overrides vulnerable electron-builder transitive versions with patched releases', () => {
+  assert.equal(packageJson.pnpm, undefined);
+  assert.match(workspaceConfig, /^overrides:\s*$/m);
+  assert.match(workspaceConfig, /^\s+'@electron\/get@3\.0\.0': 3\.1\.0$/m);
+  assert.match(workspaceConfig, /^\s+ejs@3\.1\.8: 3\.1\.10$/m);
+  assert.match(workspaceConfig, /^\s+semver@5\.5\.0: 5\.7\.2$/m);
+  assert.doesNotMatch(lockfile, /^\s{2}'@electron\/get@3\.0\.0':$/m);
+  assert.doesNotMatch(lockfile, /^\s{2}ejs@3\.1\.8:$/m);
+  assert.doesNotMatch(lockfile, /^\s{2}semver@5\.5\.0:$/m);
+  assert.match(lockfile, /^\s{2}'@electron\/get@3\.1\.0':$/m);
+  assert.match(lockfile, /^\s{2}ejs@3\.1\.10:$/m);
+  assert.match(lockfile, /^\s{2}semver@5\.7\.2:$/m);
+});
+
+test('electron-builder resolves a cache-capable @electron/get API', () => {
+  const electronBuilderPackage = require.resolve('electron-builder/package.json');
+  const electronBuilderRequire = createRequire(electronBuilderPackage);
+  const appBuilderPackage = electronBuilderRequire.resolve('app-builder-lib/package.json');
+  const appBuilderRequire = createRequire(appBuilderPackage);
+  const electronGet = appBuilderRequire('@electron/get');
+
+  assert.equal(electronGet.ElectronDownloadCacheMode.ReadWrite, 0);
+  assert.equal(electronGet.ElectronDownloadCacheMode.WriteOnly, 2);
 });
 
 function readIcoSizes(icon) {

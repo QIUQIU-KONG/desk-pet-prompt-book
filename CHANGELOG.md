@@ -35,6 +35,7 @@ First release with an unsigned Windows Beta installer. This is a public test rel
 
 - Electron upgraded and pinned to `39.8.10` after dependency review.
 - Electron renderer uses context isolation, sandboxing, and disabled Node integration.
+- pnpm workspace overrides keep electron-builder on cache-compatible and vulnerability-patched transitive versions.
 
 ### Known Limitations
 

@@ -108,3 +108,13 @@
 - 应用已强制单实例；第二次启动聚焦已有窗口。桌宠和展开面板右键均打开只含“退出桌宠”的原生菜单。
 - `build/icon.ico` 由已批准桌宠图生成六种尺寸，作为第 9 个非商业视觉文件记录。
 - 标签发布工作流会验证提交属于 `origin/main`、完成测试/readiness/audit、构建无签名安装包、验证 SHA-256，最后才公开 Pre-release。
+- pnpm 11 的依赖约束集中在 `pnpm-workspace.yaml`：拒绝无关的 `electron-winstaller` 安装脚本，并将 electron-builder 的 `@electron/get@3.0.0`、`ejs@3.1.8`、`semver@5.5.0` 精确修补到兼容版本 `3.1.0`、`3.1.10`、`5.7.2`；当前审计为 0 已知漏洞。
+
+## Windows Beta 本机验收（2026-07-17）
+
+- 完整质量门在依赖修补后通过：冻结安装、语法检查、115 项测试、严格 readiness、依赖审计和 Git 空白检查均成功，总耗时约 10 秒。
+- 本机生成未签名安装包 `Desk-Pet-Prompt-Book-Setup-0.1.0-beta.1.exe`，大小 `103623013` 字节，SHA-256 为 `b13af8a661f6216cd30b74a68d0e8e1cc72c794f01cded66073275a7585bd69b`。
+- 安装器作为当前用户写入 HKCU，默认安装到 `%LOCALAPPDATA%\Programs\DeskPetPromptBook`；桌面和开始菜单快捷方式均指向 `DeskPetPromptBook.exe`，Run 与 Startup 中没有应用启动项。
+- 安装版第一次启动保持运行，第二次启动以 0 码退出，系统中只保留 1 个安装版主进程。
+- Windows UI Automation 实测桌宠窗口为 `220×220`、展开面板为 `1024×700`；两种状态右键都能发现原生 `ControlType.MenuItem`“退出桌宠”，调用后进程以 0 码退出。
+- 卸载后安装目录、两个快捷方式和卸载项均消失，`%APPDATA%\desk-pet-prompt-book` 中的验收标记保留，既有提示词数据文件前后哈希差异为 0；随后已删除验收标记并重新安装同一构建。
