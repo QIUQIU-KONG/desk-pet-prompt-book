@@ -80,7 +80,7 @@ jobs:
         run: pnpm run release:verify-assets
 
       - name: Upload verified release inputs
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: windows-beta-${{ github.ref_name }}
           path: |
